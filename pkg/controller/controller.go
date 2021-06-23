@@ -13,6 +13,7 @@ import (
 	didexchangecmd "github.com/hyperledger/aries-framework-go/pkg/controller/command/didexchange"
 	introducecmd "github.com/hyperledger/aries-framework-go/pkg/controller/command/introduce"
 	issuecredentialcmd "github.com/hyperledger/aries-framework-go/pkg/controller/command/issuecredential"
+	jsonldcontextcmd "github.com/hyperledger/aries-framework-go/pkg/controller/command/jsonld/context"
 	"github.com/hyperledger/aries-framework-go/pkg/controller/command/kms"
 	routercmd "github.com/hyperledger/aries-framework-go/pkg/controller/command/mediator"
 	messagingcmd "github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging"
@@ -25,11 +26,13 @@ import (
 	didexchangerest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/didexchange"
 	introducerest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/introduce"
 	issuecredentialrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/issuecredential"
+	jsonldcontextrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/jsonld/context"
 	kmsrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/kms"
 	"github.com/hyperledger/aries-framework-go/pkg/controller/rest/mediator"
 	messagingrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/messaging"
 	outofbandrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/outofband"
 	presentproofrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/presentproof"
+	"github.com/hyperledger/aries-framework-go/pkg/controller/rest/rfc0593"
 	vcwalletrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/vcwallet"
 	vdrrest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/vdr"
 	verifiablerest "github.com/hyperledger/aries-framework-go/pkg/controller/rest/verifiable"
@@ -38,12 +41,13 @@ import (
 )
 
 type allOpts struct {
-	webhookURLs  []string
-	defaultLabel string
-	autoAccept   bool
-	msgHandler   command.MessageHandler
-	notifier     command.Notifier
-	walletConf   *vcwalletcmd.Config
+	webhookURLs        []string
+	defaultLabel       string
+	autoAccept         bool
+	autoExecuteRFC0593 bool
+	msgHandler         command.MessageHandler
+	notifier           command.Notifier
+	walletConf         *vcwalletcmd.Config
 }
 
 const wsPath = "/ws"
@@ -76,6 +80,13 @@ func WithDefaultLabel(defaultLabel string) Opt {
 func WithAutoAccept(autoAccept bool) Opt {
 	return func(opts *allOpts) {
 		opts.autoAccept = autoAccept
+	}
+}
+
+// WithAutoExecuteRFC0593 enables RFC0593.
+func WithAutoExecuteRFC0593(autoExecute bool) Opt {
+	return func(opts *allOpts) {
+		opts.autoExecuteRFC0593 = autoExecute
 	}
 }
 
@@ -137,11 +148,19 @@ func GetRESTHandlers(ctx *context.Provider, opts ...Opt) ([]rest.Handler, error)
 		return nil, fmt.Errorf("create verifiable rest command : %w", err)
 	}
 
+	var issuecredentialOp *issuecredentialrest.Operation
+
+	if restAPIOpts.autoExecuteRFC0593 {
+		issuecredentialOp, err = issuecredentialrest.New(ctx, notifier, ctx)
+	} else {
+		issuecredentialOp, err = issuecredentialrest.New(ctx, notifier, nil)
+	}
 	// issuecredential REST operation
-	issuecredentialOp, err := issuecredentialrest.New(ctx, notifier)
 	if err != nil {
 		return nil, fmt.Errorf("create issue-credential rest command : %w", err)
 	}
+
+	rfc0593Op := rfc0593.New(ctx)
 
 	// presentproof REST operation
 	presentproofOp, err := presentproofrest.New(ctx, notifier)
@@ -167,6 +186,12 @@ func GetRESTHandlers(ctx *context.Provider, opts ...Opt) ([]rest.Handler, error)
 	// vc wallet command controller
 	wallet := vcwalletrest.New(ctx, restAPIOpts.walletConf)
 
+	// JSON-LD context REST operation
+	contextOp, err := jsonldcontextrest.New(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("create jsonld context rest command : %w", err)
+	}
+
 	// creat handlers from all operations
 	var allHandlers []rest.Handler
 	allHandlers = append(allHandlers, exchangeOp.GetRESTHandlers()...)
@@ -175,11 +200,13 @@ func GetRESTHandlers(ctx *context.Provider, opts ...Opt) ([]rest.Handler, error)
 	allHandlers = append(allHandlers, routeOp.GetRESTHandlers()...)
 	allHandlers = append(allHandlers, verifiablecmd.GetRESTHandlers()...)
 	allHandlers = append(allHandlers, issuecredentialOp.GetRESTHandlers()...)
+	allHandlers = append(allHandlers, rfc0593Op.GetRESTHandlers()...)
 	allHandlers = append(allHandlers, presentproofOp.GetRESTHandlers()...)
 	allHandlers = append(allHandlers, introduceOp.GetRESTHandlers()...)
 	allHandlers = append(allHandlers, outofbandOp.GetRESTHandlers()...)
 	allHandlers = append(allHandlers, kmscmd.GetRESTHandlers()...)
 	allHandlers = append(allHandlers, wallet.GetRESTHandlers()...)
+	allHandlers = append(allHandlers, contextOp.GetRESTHandlers()...)
 
 	nhp, ok := notifier.(handlerProvider)
 	if ok {
@@ -267,6 +294,12 @@ func GetCommandHandlers(ctx *context.Provider, opts ...Opt) ([]command.Handler, 
 	// vc wallet command controller
 	wallet := vcwalletcmd.New(ctx, cmdOpts.walletConf)
 
+	// JSON-LD context command operation
+	contextcmd, err := jsonldcontextcmd.New(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("create jsonld context command : %w", err)
+	}
+
 	var allHandlers []command.Handler
 	allHandlers = append(allHandlers, didexcmd.GetHandlers()...)
 	allHandlers = append(allHandlers, vcmd.GetHandlers()...)
@@ -279,6 +312,7 @@ func GetCommandHandlers(ctx *context.Provider, opts ...Opt) ([]command.Handler, 
 	allHandlers = append(allHandlers, introduce.GetHandlers()...)
 	allHandlers = append(allHandlers, outofband.GetHandlers()...)
 	allHandlers = append(allHandlers, wallet.GetHandlers()...)
+	allHandlers = append(allHandlers, contextcmd.GetHandlers()...)
 
 	return allHandlers, nil
 }

@@ -1102,6 +1102,14 @@ func (r *restIterator) Tags() ([]spi.Tag, error) {
 	return filterOutKeyTag(r.currentTags, r.currentKey), nil
 }
 
+func (r *restIterator) TotalItems() (int, error) {
+	if len(r.documentIDs) == 0 {
+		return len(r.documents), nil
+	}
+
+	return len(r.documentIDs), nil
+}
+
 // Nothing to close for a restIterator.
 func (r *restIterator) Close() error {
 	return nil

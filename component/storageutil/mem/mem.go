@@ -419,6 +419,10 @@ func (m *memIterator) Tags() ([]spi.Tag, error) {
 	return m.currentDBEntry.tags, nil
 }
 
+func (m *memIterator) TotalItems() (int, error) {
+	return len(m.keys), nil
+}
+
 // Close is a no-op, since there's nothing to close for a memIterator.
 func (m *memIterator) Close() error {
 	return nil

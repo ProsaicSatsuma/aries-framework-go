@@ -29,6 +29,7 @@ import (
 	"github.com/hyperledger/aries-framework-go/test/bdd/pkg/messaging"
 	"github.com/hyperledger/aries-framework-go/test/bdd/pkg/outofband"
 	"github.com/hyperledger/aries-framework-go/test/bdd/pkg/presentproof"
+	"github.com/hyperledger/aries-framework-go/test/bdd/pkg/rfc0593"
 	"github.com/hyperledger/aries-framework-go/test/bdd/pkg/vdr"
 	"github.com/hyperledger/aries-framework-go/test/bdd/pkg/verifiable"
 )
@@ -110,7 +111,7 @@ func runBddTests(tags, format string) int {
 						panic(fmt.Sprintf("Invalid value found in 'TEST_SLEEP': %s", e))
 					}
 				}
-				fmt.Printf("*** testSleep=%d", testSleep)
+				fmt.Printf("*** testSleep=%d\n", testSleep)
 				time.Sleep(time.Second * time.Duration(testSleep))
 			}
 		})
@@ -196,5 +197,7 @@ func features() []feature {
 		presentproof.NewPresentProofSDKSteps(),
 		presentproof.NewPresentProofControllerSteps(),
 		vdr.NewVDRControllerSteps(),
+		rfc0593.NewGoSDKSteps(),
+		rfc0593.NewRestSDKSteps(),
 	}
 }
