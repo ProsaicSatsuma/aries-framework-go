@@ -1,0 +1,5246 @@
+consumes:
+  - application/json
+definitions:
+  AddContentRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      collectionID:
+        description: ID of the wallet collection to which this content should belong.
+        type: string
+        x-go-name: CollectionID
+      content:
+        description: content to be added to wallet content store.
+        type: object
+        x-go-name: Content
+      contentType:
+        $ref: '#/definitions/ContentType'
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: AddContentRequest is request for adding a content to wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  Attachment:
+    description: To find out more please visit https://github.com/hyperledger/aries-rfcs/tree/master/concepts/0017-attachments
+    properties:
+      '@id':
+        description: |-
+          ID is a JSON-LD construct that uniquely identifies attached content within the scope of a given message.
+          Recommended on appended attachment descriptors. Possible but generally unused on embedded attachment descriptors.
+          Never required if no references to the attachment exist; if omitted, then there is no way
+          to refer to the attachment later in the thread, in error messages, and so forth.
+          Because @id is used to compose URIs, it is recommended that this name be brief and avoid spaces
+          and other characters that require URI escaping.
+        type: string
+        x-go-name: ID
+      byte_count:
+        description: |-
+          ByteCount is an optional, and mostly relevant when content is included by reference instead of by value.
+          Lets the receiver guess how expensive it will be, in time, bandwidth, and storage, to fully fetch the attachment.
+        format: int64
+        type: integer
+        x-go-name: ByteCount
+      data:
+        $ref: '#/definitions/AttachmentData'
+      description:
+        description: Description is an optional human-readable description of the
+          content.
+        type: string
+        x-go-name: Description
+      filename:
+        description: |-
+          FileName is a hint about the name that might be used if this attachment is persisted as a file.
+          It is not required, and need not be unique. If this field is present and mime-type is not,
+          the extension on the filename may be used to infer a MIME type.
+        type: string
+        x-go-name: FileName
+      lastmod_time:
+        description: LastModTime is a hint about when the content in this attachment
+          was last modified.
+        format: date-time
+        type: string
+        x-go-name: LastModTime
+      mime-type:
+        description: MimeType describes the MIME type of the attached content. Optional
+          but recommended.
+        type: string
+        x-go-name: MimeType
+    title: Attachment is intended to provide the possibility to include files, links
+      or even JSON payload to the message.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/decorator
+  AttachmentData:
+    properties:
+      base64:
+        description: Base64 encoded data, when representing arbitrary content inline
+          instead of via links. Optional.
+        type: string
+        x-go-name: Base64
+      json:
+        description: |-
+          JSON is a directly embedded JSON data, when representing content inline instead of via links,
+          and when the content is natively conveyable as JSON. Optional.
+        type: object
+        x-go-name: JSON
+      jws:
+        description: JWS is a JSON web signature over the encoded data, in detached
+          format.
+        type: object
+        x-go-name: JWS
+      links:
+        description: Links is a list of zero or more locations at which the content
+          may be fetched.
+        items:
+          type: string
+        type: array
+        x-go-name: Links
+      sha256:
+        description: |-
+          Sha256 is a hash of the content. Optional. Used as an integrity check if content is inlined.
+          if content is only referenced, then including this field makes the content tamper-evident.
+          This may be redundant, if the content is stored in an inherently immutable container like
+          content-addressable storage. This may also be undesirable, if dynamic content at a specified
+          link is beneficial. Including a hash without including a way to fetch the content via link
+          is a form of proof of existence.
+        type: string
+        x-go-name: Sha256
+    title: AttachmentData contains attachment payload.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/decorator
+  Attribute:
+    properties:
+      mime-type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      value:
+        type: string
+        x-go-name: Value
+    title: Attribute describes an attribute for a Preview Credential.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/issuecredential
+  AwaitReply:
+    properties:
+      messageType:
+        description: ReplyMessageType message type of incoming reply
+        type: string
+        x-go-name: ReplyMessageType
+      timeout:
+        $ref: '#/definitions/Duration'
+    title: AwaitReply contains await for reply parameters.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging
+  BatchPickupRequest:
+    properties:
+      batch_size:
+        description: Size of batch of pending messages to be dispatched.
+        format: int64
+        type: integer
+        x-go-name: Size
+      connectionID:
+        description: ConnectionID of connection for which pending messages needs to
+          be dispatched.
+        type: string
+        x-go-name: ConnectionID
+    title: BatchPickupRequest is request for dispatching pending messages.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/mediator
+  BatchPickupResponse:
+    properties:
+      message_count:
+        description: Count of messages dispatched.
+        format: int64
+        type: integer
+        x-go-name: MessageCount
+    title: BatchPickupResponse is response for dispatching pending messages.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/mediator
+  Code:
+    format: int32
+    title: Code is the error code of command errors.
+    type: integer
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command
+  Connection:
+    description: This is used to represent query connection result.
+    properties:
+      ConnectionID:
+        type: string
+      Implicit:
+        type: boolean
+      InvitationDID:
+        type: string
+      InvitationID:
+        type: string
+      MediaTypeProfiles:
+        items:
+          type: string
+        type: array
+      MyDID:
+        type: string
+      Namespace:
+        type: string
+      ParentThreadID:
+        type: string
+      RecipientKeys:
+        items:
+          type: string
+        type: array
+      RoutingKeys:
+        items:
+          type: string
+        type: array
+      ServiceEndPoint:
+        type: string
+      State:
+        type: string
+      TheirDID:
+        type: string
+      TheirLabel:
+        type: string
+      ThreadID:
+        type: string
+    title: Connection model
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/client/didexchange
+  ConnectionsResponse:
+    properties:
+      connections:
+        items:
+          type: string
+        type: array
+        x-go-name: Connections
+    title: ConnectionsResponse is response for router`s connections.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/mediator
+  Content:
+    properties:
+      byte_count:
+        format: int64
+        type: integer
+        x-go-name: ByteCount
+      link:
+        type: string
+        x-go-name: Link
+      sha256:
+        type: string
+        x-go-name: Sha256
+    title: Content keeps image data.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/introduce
+  ContentQueryRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      query:
+        description: credential query(s) for querying wallet contents.
+        items:
+          $ref: '#/definitions/QueryParams'
+        type: array
+        x-go-name: Query
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: ContentQueryRequest is request model for querying wallet contents.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  ContentType:
+    title: ContentType is wallet content type.
+    type: string
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/wallet
+  ContextDocument:
+    properties:
+      content:
+        type: object
+        x-go-name: Content
+      documentURL:
+        type: string
+        x-go-name: DocumentURL
+      url:
+        type: string
+        x-go-name: URL
+    title: ContextDocument is a JSON-LD context document with associated metadata.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/jsonld
+  CreateConnectionRequest:
+    description: This is used for creating connection request.
+    properties:
+      implicit:
+        type: boolean
+        x-go-name: Implicit
+      invitationDID:
+        type: string
+        x-go-name: InvitationDID
+      invitationID:
+        type: string
+        x-go-name: InvitationID
+      myDID:
+        type: string
+        x-go-name: MyDID
+      parentThreadID:
+        type: string
+        x-go-name: ParentThreadID
+      theirDID:
+        $ref: '#/definitions/DIDDocument'
+      theirLabel:
+        type: string
+        x-go-name: TheirLabel
+      threadID:
+        type: string
+        x-go-name: ThreadID
+    title: CreateConnectionRequest model
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/didexchange
+  CreateDIDRequest:
+    properties:
+      did:
+        type: object
+        x-go-name: DID
+      method:
+        type: string
+        x-go-name: Method
+      opts:
+        additionalProperties:
+          type: object
+        type: object
+        x-go-name: Opts
+    title: CreateDIDRequest is model for create did request.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vdr
+  CreateKeyPairRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      keyType:
+        $ref: '#/definitions/KeyType'
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: CreateKeyPairRequest is request model for creating key pair from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  CreateKeyPairResponse:
+    properties:
+      keyID:
+        description: base64 encoded key ID of the key created.
+        type: string
+        x-go-name: KeyID
+      publicKey:
+        description: base64 encoded public key of the key pair created.
+        type: string
+        x-go-name: PublicKey
+    title: CreateKeyPairResponse is response model for creating key pair from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  CreateOrUpdateProfileRequest:
+    description: |-
+      CreateOrUpdateProfileRequest is request model for
+      creating a new wallet profile or updating an existing wallet profile.
+    properties:
+      edvConfiguration:
+        $ref: '#/definitions/EDVConfiguration'
+      keyStoreURL:
+        description: |-
+          passphrase for web/remote kms for key operations.
+          Optional, if this option is provided then wallet for this profile will use web/remote KMS for key operations.
+        type: string
+        x-go-name: KeyStoreURL
+      localKMSPassphrase:
+        description: |-
+          passphrase for local kms for key operations.
+          Optional, if this option is provided then wallet for this profile will use local KMS for key operations.
+        type: string
+        x-go-name: LocalKMSPassphrase
+      userID:
+        description: Unique identifier to identify wallet user
+        type: string
+        x-go-name: UserID
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  Credential:
+    properties:
+      verifiableCredential:
+        type: string
+        x-go-name: VerifiableCredential
+    title: Credential is model for verifiable credential.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/verifiable
+  CredentialExt:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      verifiableCredential:
+        type: string
+        x-go-name: VerifiableCredential
+    title: CredentialExt is model for verifiable credential with fields related to
+      command features.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/verifiable
+  CredentialSpec:
+    properties:
+      credential:
+        type: object
+        x-go-name: Template
+      options:
+        $ref: '#/definitions/CredentialSpecOptions'
+    title: CredentialSpec is the attachment payload in messages conforming to the
+      RFC0593 format.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/client/issuecredential/rfc0593
+  CredentialSpecOptions:
+    description: TODO support CredentialStatus.
+    properties:
+      challenge:
+        type: string
+        x-go-name: Challenge
+      created:
+        type: string
+        x-go-name: Created
+      credentialStatus:
+        $ref: '#/definitions/CredentialStatus'
+      domain:
+        type: string
+        x-go-name: Domain
+      proofPurpose:
+        type: string
+        x-go-name: ProofPurpose
+      proofType:
+        type: string
+        x-go-name: ProofType
+    title: CredentialSpecOptions are the options for issuance of the credential.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/client/issuecredential/rfc0593
+  CredentialStatus:
+    properties:
+      type:
+        type: string
+        x-go-name: Type
+    title: CredentialStatus is the requested status for the credential.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/client/issuecredential/rfc0593
+  DIDArgs:
+    properties:
+      did:
+        type: object
+        x-go-name: DID
+      name:
+        type: string
+        x-go-name: Name
+    title: DIDArgs is model for did doc with fields related to command features.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vdr
+  DIDCommMsgMap:
+    additionalProperties:
+      type: object
+    title: DIDCommMsgMap did comm msg.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/common/service
+  DIDDocument:
+    properties:
+      contents:
+        type: object
+        x-go-name: Contents
+      id:
+        type: string
+        x-go-name: ID
+    title: DIDDocument model.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/didexchange
+  DeriveCredentialRequest:
+    properties:
+      credential:
+        description: Raw Credential from which a new credential will be derived
+        type: object
+        x-go-name: Credential
+      frame:
+        additionalProperties:
+          type: object
+        description: Frame is JSON-LD frame used for selective disclosure.
+        type: object
+        x-go-name: Frame
+      nonce:
+        description: Nonce to prove uniqueness or freshness of the proof.
+        type: string
+        x-go-name: Nonce
+      skipVerify:
+        description: SkipVerify can be used to skip verification of `Credential` provided.
+        type: boolean
+        x-go-name: SkipVerify
+    title: DeriveCredentialRequest is request for deriving credential.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/verifiable
+  DeriveRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      frame:
+        additionalProperties:
+          type: object
+        description: Frame is JSON-LD frame used for selective disclosure.
+        type: object
+        x-go-name: Frame
+      nonce:
+        description: Nonce to prove uniqueness or freshness of the proof.
+        type: string
+        x-go-name: Nonce
+      rawCredential:
+        description: |-
+          List of raw credential to be presented.
+          optional, will be used only if other options is not provided.
+        type: object
+        x-go-name: RawCredential
+      storedCredentialID:
+        description: |-
+          ID of the credential already saved in wallet content store.
+          optional, if provided then this option takes precedence.
+        type: string
+        x-go-name: StoredCredentialID
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: DeriveRequest is request model for deriving a credential from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  DescriptionL10N:
+    additionalProperties:
+      type: string
+    description: |-
+      DescriptionL10N may contain locale field and key->val pair for translation
+      e.g { "locale": "en", "es": "Donde se toma el MRI; no en el centro"},
+      where locale field tells that field Description form To struct has en translation.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/introduce
+  Doc:
+    properties:
+      AssertionMethod:
+        items:
+          $ref: '#/definitions/Verification'
+        type: array
+      Authentication:
+        items:
+          $ref: '#/definitions/Verification'
+        type: array
+      CapabilityDelegation:
+        items:
+          $ref: '#/definitions/Verification'
+        type: array
+      CapabilityInvocation:
+        items:
+          $ref: '#/definitions/Verification'
+        type: array
+      Context:
+        items:
+          type: string
+        type: array
+      Created:
+        format: date-time
+        type: string
+      ID:
+        type: string
+      KeyAgreement:
+        items:
+          $ref: '#/definitions/Verification'
+        type: array
+      Proof:
+        items:
+          $ref: '#/definitions/Proof'
+        type: array
+      Service:
+        items:
+          $ref: '#/definitions/Service'
+        type: array
+      Updated:
+        format: date-time
+        type: string
+      VerificationMethod:
+        items:
+          $ref: '#/definitions/VerificationMethod'
+        type: array
+    title: Doc DID Document definition.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  DocResolution:
+    properties:
+      Context:
+        items:
+          type: string
+        type: array
+      DIDDocument:
+        $ref: '#/definitions/Doc'
+      DocumentMetadata:
+        $ref: '#/definitions/DocumentMetadata'
+    title: DocResolution did resolution.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  DocumentMetadata:
+    properties:
+      canonicalId:
+        description: CanonicalID is canonical ID key.
+        type: string
+        x-go-name: CanonicalID
+      deactivated:
+        description: Deactivated is deactivated flag key.
+        type: boolean
+        x-go-name: Deactivated
+      equivalentId:
+        description: EquivalentID is equivalent ID array.
+        items:
+          type: string
+        type: array
+        x-go-name: EquivalentID
+      method:
+        $ref: '#/definitions/MethodMetadata'
+    title: DocumentMetadata document metadata.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  Duration:
+    description: |-
+      A Duration represents the elapsed time between two instants
+      as an int64 nanosecond count. The representation limits the
+      largest representable duration to approximately 290 years.
+    format: int64
+    type: integer
+    x-go-package: time
+  EDVConfiguration:
+    properties:
+      encryptionKID:
+        description: |-
+          Encryption key ID of already existing key in wallet profile kms.
+          If profile is using localkms then wallet will create this key set for wallet user.
+        type: string
+        x-go-name: EncryptionKeyID
+      macKID:
+        description: |-
+          MAC operation key ID of already existing key in wallet profile kms.
+          If profile is using localkms then wallet will create this key set for wallet user.
+        type: string
+        x-go-name: MACKeyID
+      serverURL:
+        description: EDV server URL for storing wallet contents.
+        type: string
+        x-go-name: ServerURL
+      vaultID:
+        description: EDV vault ID for storing the wallet contents.
+        type: string
+        x-go-name: VaultID
+    title: EDVConfiguration contains configuration for EDV settings for profile creation.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  ExchangeResponse:
+    description: response of accept exchange request.
+    properties:
+      accept:
+        description: Connection invitation accept mode
+        type: string
+        x-go-name: Accept
+      alias:
+        description: Alias of connection invitation
+        type: string
+        x-go-name: Alias
+      connection_id:
+        description: the connection ID of the connection invitation
+        type: string
+        x-go-name: ConnectionID
+      created_at:
+        description: Created time
+        format: date-time
+        type: string
+        x-go-name: CreatedTime
+      error_msg:
+        description: Error message
+        type: string
+        x-go-name: Error
+      inbound_connection_id:
+        description: the connection ID of the connection invitation
+        type: string
+        x-go-name: InboundConnectionID
+      initiator:
+        description: Initiator is Connection invitation initiator
+        type: string
+        x-go-name: Initiator
+      invitation_key:
+        description: Invitation key
+        type: string
+        x-go-name: InvitationKey
+      invitation_mode:
+        description: Invitation mode
+        type: string
+        x-go-name: Mode
+      my_did:
+        description: MyDID is DID of the agent
+        type: string
+        x-go-name: MyDID
+      request_id:
+        description: Invitation ID of the connection request
+        type: string
+        x-go-name: RequestID
+      routing_state:
+        description: Routing state of connection invitation
+        type: string
+        x-go-name: RoutingState
+      state:
+        description: State of the connection invitation
+        type: string
+        x-go-name: State
+      their_did:
+        description: TheirDID is other party's DID
+        type: string
+        x-go-name: TheirDID
+      their_label:
+        description: TheirRole is other party's role
+        type: string
+        x-go-name: TheirLabel
+      their_role:
+        description: TheirRole is other party's role
+        type: string
+        x-go-name: TheirRole
+      updated_at:
+        description: Updated time
+        format: date-time
+        type: string
+        x-go-name: UpdatedTime
+    title: ExchangeResponse model
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/didexchange
+  Format:
+    properties:
+      attach_id:
+        type: string
+        x-go-name: AttachID
+      format:
+        type: string
+        x-go-name: Format
+    title: Format contains the the value of the attachment @id and the verifiable
+      credential format of the attachment.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/issuecredential
+  GetAllContentRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      collectionID:
+        description: ID of the collection on which the response contents to be filtered.
+        type: string
+        x-go-name: CollectionID
+      contentType:
+        $ref: '#/definitions/ContentType'
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: GetAllContentRequest is request for getting all contents from wallet for
+      given content type.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  GetContentRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      contentID:
+        description: ID of the content to be returned from wallet
+        type: string
+        x-go-name: ContentID
+      contentType:
+        $ref: '#/definitions/ContentType'
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: GetContentRequest is request for getting a content from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  ImgAttach:
+    properties:
+      content:
+        $ref: '#/definitions/Content'
+      description:
+        type: string
+        x-go-name: Description
+      filename:
+        type: string
+        x-go-name: Filename
+      mime-type:
+        type: string
+        x-go-name: MimeType
+    title: ImgAttach represent information about the image.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/introduce
+  IssueCredential:
+    $ref: '#/definitions/IssueCredential'
+  IssueRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      credential:
+        description: raw credential to be issued from wallet.
+        type: object
+        x-go-name: Credential
+      proofOptions:
+        $ref: '#/definitions/ProofOptions'
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: IssueRequest is request model for issuing credential from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  KeyType:
+    title: KeyType represents a key type supported by the KMS.
+    type: string
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/kms
+  LockWalletRequest:
+    properties:
+      userID:
+        description: user ID of the wallet to be locked.
+        type: string
+        x-go-name: UserID
+    title: LockWalletRequest contains options for locking wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  MethodMetadata:
+    properties:
+      published:
+        description: Published is published key.
+        type: boolean
+        x-go-name: Published
+      recoveryCommitment:
+        description: RecoveryCommitment is recovery commitment key.
+        type: string
+        x-go-name: RecoveryCommitment
+      updateCommitment:
+        description: UpdateCommitment is update commitment key.
+        type: string
+        x-go-name: UpdateCommitment
+    title: MethodMetadata method metadata.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  PresentationExt:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      verifiablePresentation:
+        type: object
+        x-go-name: VerifiablePresentation
+    title: PresentationExt is model for presentation with fields related to command
+      features.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/verifiable
+  PresentationRequest:
+    properties:
+      challenge:
+        description: Challenge is a random or pseudo-random value option authentication
+        type: string
+        x-go-name: Challenge
+      created:
+        description: Created date of the proof. If omitted current system time will
+          be used.
+        format: date-time
+        type: string
+        x-go-name: Created
+      did:
+        type: string
+        x-go-name: DID
+      domain:
+        description: Domain is operational domain of a digital proof.
+        type: string
+        x-go-name: Domain
+      kid:
+        type: string
+        x-go-name: KID
+      presentation:
+        type: object
+        x-go-name: Presentation
+      signatureRepresentation:
+        $ref: '#/definitions/SignatureRepresentation'
+      signatureType:
+        description: SignatureType signature type used for signing
+        type: string
+        x-go-name: SignatureType
+      skipVerify:
+        description: SkipVerify can be used to skip verification of `VerifiableCredentials`
+          provided.
+        type: boolean
+        x-go-name: SkipVerify
+      verifiableCredential:
+        items:
+          type: object
+        type: array
+        x-go-name: VerifiableCredentials
+      verificationMethod:
+        description: VerificationMethod is the URI of the verificationMethod used
+          for the proof.
+        type: string
+        x-go-name: VerificationMethod
+    title: PresentationRequest is model for verifiable presentation request.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/verifiable
+  PresentationRequestByID:
+    description: This is used for querying/removing by ID from input json.
+    properties:
+      did:
+        description: DID ID
+        type: string
+        x-go-name: DID
+      id:
+        description: ID
+        type: string
+        x-go-name: ID
+      signatureType:
+        description: SignatureType
+        type: string
+        x-go-name: SignatureType
+    title: PresentationRequestByID model
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/verifiable
+  PreviewCredential:
+    properties:
+      '@type':
+        type: string
+        x-go-name: Type
+      attributes:
+        items:
+          $ref: '#/definitions/Attribute'
+        type: array
+        x-go-name: Attributes
+    title: PreviewCredential is used to construct a preview of the data for the credential
+      that is to be issued.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/issuecredential
+  Proof:
+    properties:
+      Created:
+        format: date-time
+        type: string
+      Creator:
+        type: string
+      Domain:
+        type: string
+      Nonce:
+        items:
+          format: uint8
+          type: integer
+        type: array
+      ProofPurpose:
+        type: string
+      ProofValue:
+        items:
+          format: uint8
+          type: integer
+        type: array
+      Type:
+        type: string
+    title: Proof is cryptographic proof of the integrity of the DID Document.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  ProofOptions:
+    description: |-
+      Options for adding linked data proofs to a verifiable credential or a verifiable presentation.
+      To be used as options for issue/prove wallet features.
+    properties:
+      challenge:
+        description: |-
+          Challenge is a random or pseudo-random value option authentication.
+          Optional, by default challenge will not be part of proof.
+        type: string
+        x-go-name: Challenge
+      controller:
+        description: Controller is a DID to be for signing. This option is required
+          for issue/prove wallet features.
+        type: string
+        x-go-name: Controller
+      created:
+        description: |-
+          Created date of the proof.
+          Optional, current system time will be used.
+        format: date-time
+        type: string
+        x-go-name: Created
+      domain:
+        description: |-
+          Domain is operational domain of a digital proof.
+          Optional, by default domain will not be part of proof.
+        type: string
+        x-go-name: Domain
+      proofRepresentation:
+        $ref: '#/definitions/SignatureRepresentation'
+      proofType:
+        description: |-
+          ProofType is signature type used for signing.
+          Optional, by default proof will be generated in Ed25519Signature2018 format.
+        type: string
+        x-go-name: ProofType
+      verificationMethod:
+        description: |-
+          VerificationMethod is the URI of the verificationMethod used for the proof.
+          Optional, by default Controller public key matching 'assertion' for issue or 'authentication' for prove functions.
+        type: string
+        x-go-name: VerificationMethod
+    title: ProofOptions model
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/wallet
+  ProveRequest:
+    description: Contains options for proofs and credential. Any combination of credential
+      option can be mixed.
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      presentation:
+        description: Presentation to be proved.
+        type: object
+        x-go-name: Presentation
+      proofOptions:
+        $ref: '#/definitions/ProofOptions'
+      rawCredentials:
+        description: List of raw credentials to be presented.
+        items:
+          type: object
+        type: array
+        x-go-name: RawCredentials
+      storedCredentials:
+        description: IDs of credentials already saved in wallet content store.
+        items:
+          type: string
+        type: array
+        x-go-name: StoredCredentials
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: ProveRequest for producing verifiable presentation from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  QueryParams:
+    description: Refer https://w3c-ccg.github.io/vp-request-spec/#format for more
+      details.
+    properties:
+      credentialQuery:
+        description: Query can contain one or more credential queries.
+        items:
+          type: object
+        type: array
+        x-go-name: Query
+      type:
+        description: |-
+          Type of the query.
+          Allowed values  'QueryByExample', 'QueryByFrame', 'PresentationExchange', 'DIDAuth'
+        type: string
+        x-go-name: Type
+    title: QueryParams contains credential queries for querying credential from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/wallet
+  Record:
+    properties:
+      id:
+        type: string
+        x-go-name: ID
+      name:
+        type: string
+        x-go-name: Name
+    title: Record model.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/store/did
+  RegisterHTTPMsgSvcArgs:
+    properties:
+      name:
+        description: Name of the HTTP over DIDComm message service
+        type: string
+        x-go-name: Name
+      purpose:
+        description: |-
+          Acceptance criteria for http over did comm message service based on message purpose.
+          In case of multiple purposes, operation will follow `A tagging system` purpose field validation from RFC-0351
+          If not provided then all incoming messages of HTTP over DIDComm type will be handled by operation.
+        items:
+          type: string
+        type: array
+        x-go-name: Purpose
+    title: RegisterHTTPMsgSvcArgs contains parameters for registering an HTTP over
+      DIDComm message service to message handler.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging
+  RegisterMsgSvcArgs:
+    properties:
+      name:
+        description: Name of the message service
+        type: string
+        x-go-name: Name
+      purpose:
+        description: |-
+          Acceptance criteria for message service based on message purpose
+          in case of multiple purposes, message will be dispatched if any one of the purpose matches
+          with the purpose of incoming message.
+          Can be provided in conjunction with other acceptance criteria.
+        items:
+          type: string
+        type: array
+        x-go-name: Purpose
+      type:
+        description: |-
+          Acceptance criteria for message service based on message type.
+          Can be provided in conjunction with other acceptance criteria.
+        type: string
+        x-go-name: Type
+    title: RegisterMsgSvcArgs contains parameters for registering a message service
+      to message handler.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging
+  RegisterRoute:
+    properties:
+      connectionID:
+        type: string
+        x-go-name: ConnectionID
+    title: RegisterRoute contains parameters for registering/reconnecting router.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/mediator
+  RemoveContentRequest:
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      contentID:
+        description: ID of the content to be removed from wallet
+        type: string
+        x-go-name: ContentID
+      contentType:
+        $ref: '#/definitions/ContentType'
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: RemoveContentRequest is request for removing a content from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  SendNewMessageArgs:
+    description: |-
+      SendNewMessageArgs contains parameters for sending new message
+      with one of three destination options below,
+      1. ConnectionID - ID of the connection between sender and receiver of this message.
+      2. TheirDID - TheirDID of the DID exchange connection record between sender and receiver of this message.
+      3. ServiceEndpoint (With recipient Keys, endpoint and optional routing keys) - To Send message outside connection.
+      Note: Precedence logic when multiple destination options are provided are according to above order.
+    properties:
+      await_reply:
+        $ref: '#/definitions/AwaitReply'
+      connection_ID:
+        description: |-
+          Connection ID of the message destination
+          This parameter takes precedence over all the other destination parameters.
+        type: string
+        x-go-name: ConnectionID
+      message_body:
+        description: Message body of the message
+        type: object
+        x-go-name: MessageBody
+      service_endpoint:
+        $ref: '#/definitions/ServiceEndpointDestinationParams'
+      their_did:
+        description: |-
+          DID of the destination.
+          This parameter takes precedence over `ServiceEndpoint` destination parameter.
+        type: string
+        x-go-name: TheirDID
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging
+  SendReplyMessageArgs:
+    properties:
+      await_reply:
+        $ref: '#/definitions/AwaitReply'
+      message_ID:
+        description: ID of the message replying to
+        type: string
+        x-go-name: MessageID
+      message_body:
+        description: Message body of the reply message
+        type: object
+        x-go-name: MessageBody
+      start_new_thread:
+        description: StartNewThread if provided, replies to message by starting a
+          new thread.
+        type: boolean
+        x-go-name: StartNewThread
+    title: SendReplyMessageArgs contains parameters for sending message reply.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging
+  Service:
+    properties:
+      accept:
+        items:
+          type: string
+        type: array
+        x-go-name: Accept
+      id:
+        type: string
+        x-go-name: ID
+      priority:
+        format: uint64
+        type: integer
+        x-go-name: Priority
+      properties:
+        additionalProperties:
+          type: object
+        type: object
+        x-go-name: Properties
+      recipientKeys:
+        items:
+          type: string
+        type: array
+        x-go-name: RecipientKeys
+      routingKeys:
+        items:
+          type: string
+        type: array
+        x-go-name: RoutingKeys
+      serviceEndpoint:
+        type: string
+        x-go-name: ServiceEndpoint
+      type:
+        type: string
+        x-go-name: Type
+    title: Service DID doc service.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  ServiceEndpointDestinationParams:
+    properties:
+      recipientKeys:
+        description: Recipient keys of service endpoint
+        items:
+          type: string
+        type: array
+        x-go-name: RecipientKeys
+      routingKeys:
+        description: Routing Keys of service endpoint
+        items:
+          type: string
+        type: array
+        x-go-name: RoutingKeys
+      serviceEndpoint:
+        description: Service endpoint
+        type: string
+        x-go-name: ServiceEndpoint
+    title: ServiceEndpointDestinationParams contains service endpoint params.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging
+  SignCredentialRequest:
+    properties:
+      challenge:
+        description: Challenge is a random or pseudo-random value option authentication
+        type: string
+        x-go-name: Challenge
+      created:
+        description: Created date of the proof. If omitted current system time will
+          be used.
+        format: date-time
+        type: string
+        x-go-name: Created
+      credential:
+        type: object
+        x-go-name: Credential
+      did:
+        type: string
+        x-go-name: DID
+      domain:
+        description: Domain is operational domain of a digital proof.
+        type: string
+        x-go-name: Domain
+      kid:
+        type: string
+        x-go-name: KID
+      signatureRepresentation:
+        $ref: '#/definitions/SignatureRepresentation'
+      signatureType:
+        description: SignatureType signature type used for signing
+        type: string
+        x-go-name: SignatureType
+      verificationMethod:
+        description: VerificationMethod is the URI of the verificationMethod used
+          for the proof.
+        type: string
+        x-go-name: VerificationMethod
+    title: SignCredentialRequest is adding proof to given credential.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/verifiable
+  SignatureRepresentation:
+    format: int64
+    title: SignatureRepresentation is a signature value holder type (e.g. "proofValue"
+      or "jws").
+    type: integer
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/verifiable
+  StatusRequest:
+    properties:
+      connectionID:
+        type: string
+        x-go-name: ConnectionID
+    title: StatusRequest is request for getting details about pending messages.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/mediator
+  StatusResponse:
+    properties:
+      '@id':
+        type: string
+        x-go-name: ID
+      '@type':
+        type: string
+        x-go-name: Type
+      ~thread:
+        $ref: '#/definitions/Thread'
+      duration_waited:
+        format: int64
+        type: integer
+        x-go-name: DurationWaited
+      last_added_time:
+        format: date-time
+        type: string
+        x-go-name: LastAddedTime
+      last_delivered_time:
+        format: date-time
+        type: string
+        x-go-name: LastDeliveredTime
+      last_removed_time:
+        format: date-time
+        type: string
+        x-go-name: LastRemovedTime
+      message_count:
+        format: int64
+        type: integer
+        x-go-name: MessageCount
+      total_size:
+        format: int64
+        type: integer
+        x-go-name: TotalSize
+    title: StatusResponse is status response containing details about pending messages.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/mediator
+  Thread:
+    properties:
+      pthid:
+        type: string
+        x-go-name: PID
+      received_orders:
+        additionalProperties:
+          format: int64
+          type: integer
+        type: object
+        x-go-name: ReceivedOrders
+      sender_order:
+        format: int64
+        type: integer
+        x-go-name: SenderOrder
+      thid:
+        type: string
+        x-go-name: ID
+    title: Thread thread data.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/decorator
+  To:
+    description: |-
+      To introducee descriptor keeps information about the introduction
+      e.g introducer wants to introduce Bot to introducee { "name": "Bob" }.
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      description~l10n:
+        $ref: '#/definitions/DescriptionL10N'
+      img~attach:
+        $ref: '#/definitions/ImgAttach'
+      name:
+        type: string
+        x-go-name: Name
+      proposed:
+        type: boolean
+        x-go-name: Proposed
+      where:
+        type: string
+        x-go-name: Where
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/didcomm/protocol/introduce
+  UnlockAuth:
+    properties:
+      authToken:
+        description: |-
+          Http header 'authorization' bearer token to be used.
+          Optional, only if required by wallet user (for webkms or edv).
+        type: string
+        x-go-name: AuthToken
+      authzKeyStoreURL:
+        description: |-
+          AuthZKeyStoreURL if ZCAP sign header feature to be used for authorizing access.
+          Optional, can be used only if ZCAP sign header feature is configured with command controller.
+        type: string
+        x-go-name: AuthZKeyStoreURL
+      capability:
+        description: |-
+          Capability if ZCAP sign header feature to be used for authorizing access.
+          Optional, can be used only if ZCAP sign header feature is configured with command controller.
+        type: string
+        x-go-name: Capability
+      secretShare:
+        description: |-
+          SecretShare if ZCAP sign header feature to be used for authorizing access.
+          Optional, can be used only if ZCAP sign header feature is configured with command controller.
+        type: string
+        x-go-name: SecretShare
+    title: UnlockAuth contains different options for authorizing access to wallet's
+      EDV content store & webkms.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  UnlockWalletRequest:
+    properties:
+      edvUnlocks:
+        $ref: '#/definitions/UnlockAuth'
+      expiry:
+        $ref: '#/definitions/Duration'
+      localKMSPassphrase:
+        description: |-
+          passphrase for local kms for key operations.
+          Optional, to be used if profile for this wallet user is setup with local KMS.
+        type: string
+        x-go-name: LocalKMSPassphrase
+      userID:
+        description: user ID of the wallet to be unlocked.
+        type: string
+        x-go-name: UserID
+      webKMSAuth:
+        $ref: '#/definitions/UnlockAuth'
+    title: UnlockWalletRequest contains different options for unlocking wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  UnregisterMsgSvcArgs:
+    properties:
+      name:
+        description: Name of the message service to be unregistered
+        type: string
+        x-go-name: Name
+    required:
+      - name
+    title: UnregisterMsgSvcArgs contains parameters for unregistering a message service
+      from message handler.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/messaging
+  Verification:
+    properties:
+      Embedded:
+        type: boolean
+      Relationship:
+        $ref: '#/definitions/VerificationRelationship'
+      VerificationMethod:
+        $ref: '#/definitions/VerificationMethod'
+    title: Verification authentication verification.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  VerificationMethod:
+    description: |-
+      The value of the verification method is defined either as raw public key bytes (Value field) or as JSON Web Key.
+      In the first case the Type field can hold additional information to understand the nature of the raw public key.
+    properties:
+      Controller:
+        type: string
+      ID:
+        type: string
+      Type:
+        type: string
+      Value:
+        items:
+          format: uint8
+          type: integer
+        type: array
+    title: VerificationMethod DID doc verification method.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  VerificationRelationship:
+    format: int64
+    title: VerificationRelationship defines a verification relationship between DID
+      subject and a verification method.
+    type: integer
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/doc/did
+  VerifyRequest:
+    description: Any one of the credential option should be used.
+    properties:
+      auth:
+        description: Authorization token for performing wallet operations.
+        type: string
+        x-go-name: Auth
+      presentation:
+        description: |-
+          Presentation to be proved.
+          optional, will be used only if other options are not provided.
+        type: object
+        x-go-name: Presentation
+      rawCredential:
+        description: |-
+          List of raw credential to be presented.
+          optional, if provided then this option takes precedence over presentation options.
+        type: object
+        x-go-name: RawCredential
+      storedCredentialID:
+        description: |-
+          ID of the credential already saved in wallet content store.
+          optional, if provided then this option takes precedence over other options.
+        type: string
+        x-go-name: StoredCredentialID
+      userID:
+        description: ID of wallet user.
+        type: string
+        x-go-name: UserID
+    title: VerifyRequest request for verifying a credential or presentation from wallet.
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/command/vcwallet
+  emptyRes:
+    description: emptyRes model
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/rest/verifiable
+  genericErrorBody:
+    properties:
+      code:
+        $ref: '#/definitions/Code'
+      message:
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: github.com/hyperledger/aries-framework-go/pkg/controller/rest
+info:
+  license:
+    name: 'SPDX-License-Identifier: Apache-2.0'
+  title: (Aries Agent REST Server) of aries-framework-go.
+  version: 0.1.0
+paths:
+  /connections:
+    get:
+      operationId: queryConnections
+      parameters:
+        - description: Alias of connection invitation
+          in: query
+          name: alias
+          type: string
+          x-go-name: Alias
+        - description: Initiator is Connection invitation initiator
+          in: query
+          name: initiator
+          type: string
+          x-go-name: Initiator
+        - description: Invitation key
+          in: query
+          name: invitation_key
+          type: string
+          x-go-name: InvitationKey
+        - description: Invitation ID
+          in: query
+          name: invitation_id
+          type: string
+          x-go-name: InvitationID
+        - description: Parent threadID
+          in: query
+          name: parent_thread_id
+          type: string
+          x-go-name: ParentThreadID
+        - description: MyDID is DID of the agent
+          in: query
+          name: my_did
+          type: string
+          x-go-name: MyDID
+        - description: State of the connection invitation
+          in: query
+          name: state
+          type: string
+          x-go-name: State
+        - description: TheirDID is other party's DID
+          in: query
+          name: their_did
+          type: string
+          x-go-name: TheirDID
+        - description: TheirRole is other party's role
+          in: query
+          name: their_role
+          type: string
+          x-go-name: TheirRole
+      responses:
+        "200":
+          $ref: '#/responses/queryConnectionsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: query agent to agent connections.
+      tags:
+        - did-exchange
+  /connections/{id}:
+    get:
+      operationId: getConnection
+      parameters:
+        - description: The ID of the connection to get
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/queryConnectionResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Fetch a single connection record.
+      tags:
+        - did-exchange
+  /connections/{id}/accept-invitation:
+    post:
+      operationId: acceptInvitation
+      parameters:
+        - description: Connection ID
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+        - description: Optional Public DID to be used for this request
+          in: query
+          name: public
+          type: string
+          x-go-name: Public
+        - description: Optional specifies router connections (comma-separated values)
+          in: query
+          name: router_connections
+          type: string
+          x-go-name: RouterConnections
+      responses:
+        "200":
+          $ref: '#/responses/acceptInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accept a stored connection invitation....
+      tags:
+        - did-exchange
+  /connections/{id}/accept-request:
+    post:
+      operationId: acceptRequest
+      parameters:
+        - description: Connection ID
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+        - description: |-
+            Optional Public DID to be used for this invitation
+            request
+          in: query
+          name: public
+          type: string
+          x-go-name: Public
+        - description: Optional specifies router connections (comma-separated values)
+          in: query
+          name: router_connections
+          type: string
+          x-go-name: RouterConnections
+      responses:
+        "200":
+          $ref: '#/responses/acceptExchangeResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a stored connection request.
+      tags:
+        - did-exchange
+  /connections/{id}/remove:
+    post:
+      operationId: removeConnection
+      parameters:
+        - description: The ID of the connection record to remove
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/removeConnectionResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Removes given connection record.
+      tags:
+        - did-exchange
+  /connections/create:
+    post:
+      operationId: createConnection
+      parameters:
+        - description: Params for creating a connection.
+          in: body
+          name: Request
+          required: true
+          schema:
+            $ref: '#/definitions/CreateConnectionRequest'
+      responses:
+        "200":
+          $ref: '#/responses/createConnectionResp'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Saves the connection record.
+      tags:
+        - did-exchange
+  /connections/create-implicit-invitation:
+    post:
+      operationId: implicitInvitation
+      parameters:
+        - description: InviterDID
+          in: query
+          name: their_did
+          type: string
+          x-go-name: InviterDID
+        - description: Optional inviter label
+          in: query
+          name: their_label
+          type: string
+          x-go-name: InviterLabel
+        - description: Optional invitee did
+          in: query
+          name: my_did
+          type: string
+          x-go-name: InviteeDID
+        - description: Optional invitee label
+          in: query
+          name: my_label
+          type: string
+          x-go-name: InviteeLabel
+        - description: Optional specifies router connections (comma-separated values)
+          in: query
+          name: router_connections
+          type: string
+          x-go-name: RouterConnections
+      responses:
+        "200":
+          $ref: '#/responses/implicitInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Create implicit invitation using inviter DID.
+      tags:
+        - did-exchange
+  /connections/create-invitation:
+    post:
+      operationId: createInvitation
+      parameters:
+        - description: The Alias to be used in invitation to be created
+          in: query
+          name: alias
+          type: string
+          x-go-name: Alias
+        - description: Optional public DID to be used in invitation
+          in: query
+          name: public
+          type: string
+          x-go-name: Public
+        - description: Optional specifies router connection id
+          in: query
+          name: router_connection_id
+          type: string
+          x-go-name: RouterConnectionID
+      responses:
+        "200":
+          $ref: '#/responses/createInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Creates a new connection invitation....
+      tags:
+        - did-exchange
+  /connections/receive-invitation:
+    post:
+      operationId: receiveInvitation
+      parameters:
+        - description: The Invitation Invitation to receive
+          in: body
+          name: Invitation
+          required: true
+          schema:
+            properties:
+              '@id':
+                description: the ID of the connection invitation
+                type: string
+                x-go-name: ID
+              '@type':
+                description: the Type of the connection invitation
+                type: string
+                x-go-name: Type
+              ~thread:
+                $ref: '#/definitions/Thread'
+              did:
+                description: the DID of the connection invitation
+                type: string
+                x-go-name: DID
+              imageUrl:
+                description: the Image URL of the connection invitation
+                type: string
+                x-go-name: ImageURL
+              label:
+                description: the Label of the connection invitation
+                type: string
+                x-go-name: Label
+              recipientKeys:
+                description: the RecipientKeys for the connection invitation
+                items:
+                  type: string
+                type: array
+                x-go-name: RecipientKeys
+              routingKeys:
+                description: the RoutingKeys of the connection invitation
+                items:
+                  type: string
+                type: array
+                x-go-name: RoutingKeys
+              serviceEndpoint:
+                description: the Service endpoint of the connection invitation
+                type: string
+                x-go-name: ServiceEndpoint
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/receiveInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Receive a new connection invitation....
+      tags:
+        - did-exchange
+  /context/add:
+    post:
+      operationId: addContextReq
+      parameters:
+        - in: body
+          name: documents
+          schema:
+            items:
+              $ref: '#/definitions/ContextDocument'
+            type: array
+          x-go-name: Documents
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      summary: Adds JSON-LD context documents to the underlying storage.
+      tags:
+        - context
+  /http-over-didcomm/register:
+    post:
+      description: registers new http over didcomm service to message handler registrar
+      operationId: registerHttpMsgSvc
+      parameters:
+        - description: Params for registering http over did comm message service.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/RegisterHTTPMsgSvcArgs'
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - http-over-didcomm
+  /introduce/{piid}/accept-problem-report:
+    post:
+      operationId: introduceAcceptProblemReport
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+      responses:
+        "200":
+          $ref: '#/responses/introduceAcceptProblemReportResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a problem report.
+      tags:
+        - introduce
+  /introduce/{piid}/accept-proposal:
+    post:
+      operationId: introduceAcceptProposal
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+      responses:
+        "200":
+          $ref: '#/responses/introduceAcceptProposalResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a proposal.
+      tags:
+        - introduce
+  /introduce/{piid}/accept-proposal-with-oob-invitation:
+    post:
+      operationId: introduceAcceptProposalWithOOBInvitation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              invitation:
+                description: Request is the out-of-band protocol's 'invitation' message.
+                properties:
+                  '@id':
+                    type: string
+                    x-go-name: ID
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  accept:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Accept
+                  goal:
+                    type: string
+                    x-go-name: Goal
+                  goal_code:
+                    type: string
+                    x-go-name: GoalCode
+                  handshake_protocols:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Protocols
+                  label:
+                    type: string
+                    x-go-name: Label
+                  request~attach:
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: Requests
+                  services:
+                    items:
+                      type: object
+                    type: array
+                    x-go-name: Services
+                type: object
+                x-go-name: Request
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/introduceAcceptProposalWithOOBRequestResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a proposal with OOBRequest.
+      tags:
+        - introduce
+  /introduce/{piid}/accept-request-with-public-oob-invitation:
+    post:
+      operationId: introduceAcceptRequestWithPublicOOBInvitation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              invitation:
+                description: Request is the out-of-band protocol's 'invitation' message.
+                properties:
+                  '@id':
+                    type: string
+                    x-go-name: ID
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  accept:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Accept
+                  goal:
+                    type: string
+                    x-go-name: Goal
+                  goal_code:
+                    type: string
+                    x-go-name: GoalCode
+                  handshake_protocols:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Protocols
+                  label:
+                    type: string
+                    x-go-name: Label
+                  request~attach:
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: Requests
+                  services:
+                    items:
+                      type: object
+                    type: array
+                    x-go-name: Services
+                type: object
+                x-go-name: Request
+              to:
+                description: To keeps information about the introduction
+                properties:
+                  description:
+                    type: string
+                    x-go-name: Description
+                  description~l10n:
+                    $ref: '#/definitions/DescriptionL10N'
+                  img~attach:
+                    $ref: '#/definitions/ImgAttach'
+                  name:
+                    type: string
+                    x-go-name: Name
+                  proposed:
+                    type: boolean
+                    x-go-name: Proposed
+                  where:
+                    type: string
+                    x-go-name: Where
+                type: object
+                x-go-name: To
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/introduceAcceptRequestWithPublicOOBInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accept a request with public OOBRequest.
+      tags:
+        - introduce
+  /introduce/{piid}/accept-request-with-recipients:
+    post:
+      operationId: introduceAcceptRequestWithRecipients
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              recipient:
+                description: Recipient specifies to whom proposal will be sent
+                properties:
+                  goal:
+                    type: string
+                    x-go-name: Goal
+                  goal_code:
+                    type: string
+                    x-go-name: GoalCode
+                  my_did:
+                    type: string
+                    x-go-name: MyDID
+                  their_did:
+                    type: string
+                    x-go-name: TheirDID
+                  to:
+                    $ref: '#/definitions/To'
+                type: object
+                x-go-name: Recipient
+              to:
+                description: To keeps information about the introduction
+                properties:
+                  description:
+                    type: string
+                    x-go-name: Description
+                  description~l10n:
+                    $ref: '#/definitions/DescriptionL10N'
+                  img~attach:
+                    $ref: '#/definitions/ImgAttach'
+                  name:
+                    type: string
+                    x-go-name: Name
+                  proposed:
+                    type: boolean
+                    x-go-name: Proposed
+                  where:
+                    type: string
+                    x-go-name: Where
+                type: object
+                x-go-name: To
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/introduceAcceptRequestWithRecipientsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accept a request with recipients.
+      tags:
+        - introduce
+  /introduce/{piid}/decline-proposal:
+    post:
+      operationId: introduceDeclineProposal
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/introduceDeclineProposalResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a proposal.
+      tags:
+        - introduce
+  /introduce/{piid}/decline-request:
+    post:
+      operationId: introduceDeclineRequest
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/introduceDeclineRequestResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a request.
+      tags:
+        - introduce
+  /introduce/actions:
+    get:
+      operationId: introduceActions
+      responses:
+        "200":
+          $ref: '#/responses/introduceActionsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Returns pending actions that have not yet to be executed or cancelled.
+      tags:
+        - introduce
+  /introduce/send-proposal:
+    post:
+      operationId: introduceSendProposal
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              recipients:
+                items:
+                  properties:
+                    goal:
+                      type: string
+                      x-go-name: Goal
+                    goal_code:
+                      type: string
+                      x-go-name: GoalCode
+                    my_did:
+                      type: string
+                      x-go-name: MyDID
+                    their_did:
+                      type: string
+                      x-go-name: TheirDID
+                    to:
+                      $ref: '#/definitions/To'
+                  type: object
+                type: array
+                x-go-name: Recipients
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/introduceSendProposalResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends a proposal.
+      tags:
+        - introduce
+  /introduce/send-proposal-with-oob-invitation:
+    post:
+      operationId: introduceSendProposalWithOOBInvitation
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              invitation:
+                description: Request is the out-of-band protocol's 'request' message.
+                properties:
+                  '@id':
+                    type: string
+                    x-go-name: ID
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  accept:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Accept
+                  goal:
+                    type: string
+                    x-go-name: Goal
+                  goal_code:
+                    type: string
+                    x-go-name: GoalCode
+                  handshake_protocols:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Protocols
+                  label:
+                    type: string
+                    x-go-name: Label
+                  request~attach:
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: Requests
+                  services:
+                    items:
+                      type: object
+                    type: array
+                    x-go-name: Services
+                type: object
+                x-go-name: Request
+              recipient:
+                description: Recipient specifies to whom proposal will be sent
+                properties:
+                  goal:
+                    type: string
+                    x-go-name: Goal
+                  goal_code:
+                    type: string
+                    x-go-name: GoalCode
+                  my_did:
+                    type: string
+                    x-go-name: MyDID
+                  their_did:
+                    type: string
+                    x-go-name: TheirDID
+                  to:
+                    $ref: '#/definitions/To'
+                type: object
+                x-go-name: Recipient
+            required:
+              - invitation
+              - recipient
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/introduceSendProposalWithOOBInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends a proposal with OOBRequest.
+      tags:
+        - introduce
+  /introduce/send-request:
+    post:
+      operationId: introduceSendRequest
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              my_did:
+                description: MyDID sender's did
+                type: string
+                x-go-name: MyDID
+              please_introduce_to:
+                description: PleaseIntroduceTo keeps information about the introduction
+                properties:
+                  description:
+                    type: string
+                    x-go-name: Description
+                  description~l10n:
+                    $ref: '#/definitions/DescriptionL10N'
+                  img~attach:
+                    $ref: '#/definitions/ImgAttach'
+                  name:
+                    type: string
+                    x-go-name: Name
+                  proposed:
+                    type: boolean
+                    x-go-name: Proposed
+                  where:
+                    type: string
+                    x-go-name: Where
+                type: object
+                x-go-name: PleaseIntroduceTo
+              their_did:
+                description: TheirDID receiver's did
+                type: string
+                x-go-name: TheirDID
+            required:
+              - my_did
+              - their_did
+              - please_introduce_to
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/introduceSendRequestResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends a request.
+      tags:
+        - introduce
+  /issuecredential/{piid}/accept-credential:
+    post:
+      operationId: issueCredentialAcceptCredential
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              names:
+                items:
+                  type: string
+                type: array
+                x-go-name: Names
+            required:
+              - names
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialAcceptCredentialResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a credential.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/accept-offer:
+    post:
+      operationId: issueCredentialAcceptOffer
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialAcceptOfferResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts an offer.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/accept-problem-report:
+    post:
+      operationId: issueCredentialAcceptProblemReport
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialAcceptProblemReportResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a problem report.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/accept-proposal:
+    post:
+      operationId: issueCredentialAcceptProposal
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              offer_credential:
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is an optional field that provides human readable information about this Credential Offer,
+                      so the offer can be evaluated by human judgment.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300].
+                    type: string
+                    x-go-name: Comment
+                  credential_preview:
+                    $ref: '#/definitions/PreviewCredential'
+                  formats:
+                    description: |-
+                      Formats contains an entry for each offers~attach array entry, providing the the value
+                      of the attachment @id and the verifiable credential format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  offers~attach:
+                    description: |-
+                      OffersAttach is a slice of attachments that further define the credential being offered.
+                      This might be used to clarify which formats or format versions will be issued.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: OffersAttach
+                type: object
+                x-go-name: OfferCredential
+            required:
+              - offer_credential
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialAcceptProposalResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a proposal.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/accept-request:
+    post:
+      operationId: issueCredentialAcceptRequest
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              issue_credential:
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is an optional field that provides human readable information about this Credential Offer,
+                      so the offer can be evaluated by human judgment.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300].
+                    type: string
+                    x-go-name: Comment
+                  credentials~attach:
+                    description: CredentialsAttach is a slice of attachments containing
+                      the issued credentials.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: CredentialsAttach
+                  formats:
+                    description: |-
+                      Formats contains an entry for each credentials~attach array entry, providing the the value
+                      of the attachment @id and the verifiable credential format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                type: object
+                x-go-name: IssueCredential
+            required:
+              - issue_credential
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialAcceptRequestResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a request.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/decline-credential:
+    post:
+      operationId: issueCredentialDeclineCredential
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialDeclineCredentialResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a credential.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/decline-offer:
+    post:
+      operationId: issueCredentialDeclineOffer
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialDeclineOfferResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines an offer.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/decline-proposal:
+    post:
+      operationId: issueCredentialDeclineProposal
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialDeclineProposalResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a proposal.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/decline-request:
+    post:
+      operationId: issueCredentialDeclineRequest
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialDeclineRequestResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a request.
+      tags:
+        - issue-credential
+  /issuecredential/{piid}/negotiate-proposal:
+    post:
+      operationId: issueCredentialNegotiateProposal
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              propose_credential:
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is an optional field that provides human readable information about this Credential Offer,
+                      so the offer can be evaluated by human judgment.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300]
+                    type: string
+                    x-go-name: Comment
+                  credential_proposal:
+                    $ref: '#/definitions/PreviewCredential'
+                  filters~attach:
+                    description: |-
+                      FiltersAttach is an array of attachments that further define the credential being proposed.
+                      This might be used to clarify which formats or format versions are wanted.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: FiltersAttach
+                  formats:
+                    description: |-
+                      Formats contains an entry for each filters~attach array entry, providing the the value of the attachment @id
+                      and the verifiable credential format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                type: object
+                x-go-name: ProposeCredential
+            required:
+              - propose_credential
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialNegotiateProposalResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Is used when the Holder wants to negotiate about an offer he received.
+      tags:
+        - issue-credential
+  /issuecredential/actions:
+    get:
+      operationId: issueCredentialActions
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialActionsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Returns pending actions that have not yet to be executed or cancelled.
+      tags:
+        - issue-credential
+  /issuecredential/send-offer:
+    post:
+      operationId: issueCredentialSendOffer
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              my_did:
+                description: MyDID sender's did
+                type: string
+                x-go-name: MyDID
+              offer_credential:
+                description: |-
+                  OfferCredential is a message describing the credential intend to offer and
+                  possibly the price they expect to be paid.
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is an optional field that provides human readable information about this Credential Offer,
+                      so the offer can be evaluated by human judgment.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300].
+                    type: string
+                    x-go-name: Comment
+                  credential_preview:
+                    $ref: '#/definitions/PreviewCredential'
+                  formats:
+                    description: |-
+                      Formats contains an entry for each offers~attach array entry, providing the the value
+                      of the attachment @id and the verifiable credential format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  offers~attach:
+                    description: |-
+                      OffersAttach is a slice of attachments that further define the credential being offered.
+                      This might be used to clarify which formats or format versions will be issued.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: OffersAttach
+                type: object
+                x-go-name: OfferCredential
+              their_did:
+                description: TheirDID receiver's did
+                type: string
+                x-go-name: TheirDID
+            required:
+              - my_did
+              - their_did
+              - offer_credential
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialSendOfferResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends an offer.
+      tags:
+        - issue-credential
+  /issuecredential/send-proposal:
+    post:
+      operationId: issueCredentialSendProposal
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              my_did:
+                description: MyDID sender's did
+                type: string
+                x-go-name: MyDID
+              propose_credential:
+                description: ProposeCredential is a message sent by the potential Holder
+                  to the Issuer to initiate the protocol
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is an optional field that provides human readable information about this Credential Offer,
+                      so the offer can be evaluated by human judgment.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300]
+                    type: string
+                    x-go-name: Comment
+                  credential_proposal:
+                    $ref: '#/definitions/PreviewCredential'
+                  filters~attach:
+                    description: |-
+                      FiltersAttach is an array of attachments that further define the credential being proposed.
+                      This might be used to clarify which formats or format versions are wanted.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: FiltersAttach
+                  formats:
+                    description: |-
+                      Formats contains an entry for each filters~attach array entry, providing the the value of the attachment @id
+                      and the verifiable credential format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                type: object
+                x-go-name: ProposeCredential
+              their_did:
+                description: TheirDID receiver's did
+                type: string
+                x-go-name: TheirDID
+            required:
+              - my_did
+              - their_did
+              - propose_credential
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialSendProposalResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends a proposal.
+      tags:
+        - issue-credential
+  /issuecredential/send-request:
+    post:
+      operationId: issueCredentialSendRequest
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              my_did:
+                description: MyDID sender's did
+                type: string
+                x-go-name: MyDID
+              request_credential:
+                description: |-
+                  RequestCredential is a message sent by the potential Holder to the Issuer,
+                  to request the issuance of a credential.
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is an optional field that provides human readable information about this Credential Offer,
+                      so the offer can be evaluated by human judgment.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300].
+                    type: string
+                    x-go-name: Comment
+                  formats:
+                    description: |-
+                      Formats contains an entry for each requests~attach array entry, providing the the value
+                      of the attachment @id and the verifiable credential format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  requests~attach:
+                    description: RequestsAttach is a slice of attachments defining the
+                      requested formats for the credential
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: RequestsAttach
+                type: object
+                x-go-name: RequestCredential
+              their_did:
+                description: TheirDID receiver's did
+                type: string
+                x-go-name: TheirDID
+            required:
+              - my_did
+              - their_did
+              - request_credential
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialSendRequestResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends a request.
+      tags:
+        - issue-credential
+  /kms/import:
+    post:
+      operationId: importKey
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      summary: Import key.
+      tags:
+        - kms
+  /kms/keyset:
+    post:
+      operationId: createKeySet
+      responses:
+        "200":
+          $ref: '#/responses/createKeySetRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Create key set.
+      tags:
+        - kms
+  /mediator/batchpickup:
+    post:
+      operationId: batchPickupRequest
+      parameters:
+        - description: Params for dispatching pending messages for given connection..
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/BatchPickupRequest'
+      responses:
+        "200":
+          $ref: '#/responses/batchPickupResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: BatchPickup dispatches pending messages for given connection.
+      tags:
+        - mediator
+  /mediator/connections:
+    get:
+      operationId: connectionsRequest
+      responses:
+        "200":
+          $ref: '#/responses/getConnectionsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Retrieves the router`s connections.
+      tags:
+        - mediator
+  /mediator/reconnect:
+    post:
+      operationId: reconnectRouteRequest
+      parameters:
+        - description: Params for reconnecting the router
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/RegisterRoute'
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      summary: Reconnect the agent with the router to re-establish lost connection.
+      tags:
+        - mediator
+  /mediator/reconnect-all:
+    get:
+      operationId: reconnectAll
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      summary: Re-establishes network connections for all mediator connections.
+      tags:
+        - mediator
+  /mediator/register:
+    post:
+      operationId: registerRouteRequest
+      parameters:
+        - description: Params for registering the route
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/RegisterRoute'
+      responses:
+        "200":
+          $ref: '#/responses/registerRouteRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Registers the agent with the router.
+      tags:
+        - mediator
+  /mediator/status:
+    post:
+      operationId: statusRequest
+      parameters:
+        - description: Params for getting details of pending messages for given connection.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/StatusRequest'
+      responses:
+        "200":
+          $ref: '#/responses/statusResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Status returns details about pending messages for given connection.
+      tags:
+        - mediator
+  /mediator/unregister:
+    delete:
+      operationId: unregisterRouter
+      parameters:
+        - description: Params for unregister the router
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/RegisterRoute'
+      responses:
+        "200":
+          $ref: '#/responses/unregisterRouteRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Unregisters the agent with the router.
+      tags:
+        - mediator
+  /message/register-service:
+    post:
+      description: registers new message service to message handler registrar
+      operationId: registerMsgSvc
+      parameters:
+        - description: Params for registering message service
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/RegisterMsgSvcArgs'
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - message
+  /message/reply:
+    post:
+      description: sends reply to existing message
+      operationId: sendReplyMessage
+      parameters:
+        - description: Params for sending message reply
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/SendReplyMessageArgs'
+      responses:
+        "200":
+          $ref: '#/responses/sendMessageResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - message
+  /message/send:
+    post:
+      description: sends new message to destination provided
+      operationId: sendNewMessage
+      parameters:
+        - description: Params for sending new message
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/SendNewMessageArgs'
+      responses:
+        "200":
+          $ref: '#/responses/sendMessageResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - message
+  /message/services:
+    get:
+      description: returns list of registered service names
+      operationId: services
+      responses:
+        "200":
+          $ref: '#/responses/registeredServicesResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - message
+        - http-over-didcomm
+  /message/unregister-service:
+    post:
+      description: unregisters given message service handler registrar
+      operationId: unregisterMsgSvc
+      parameters:
+        - description: Params for unregistering a message service
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/UnregisterMsgSvcArgs'
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - message
+        - http-over-didcomm
+  /outofband/{piid}/action-continue:
+    post:
+      operationId: outofbandActionContinue
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: query
+          name: label
+          type: string
+          x-go-name: Label
+        - in: query
+          name: router_connections
+          type: string
+          x-go-name: RouterConnections
+      responses:
+        "200":
+          $ref: '#/responses/outofbandActionContinueResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Allows continuing with the protocol after an action event was triggered.
+      tags:
+        - outofband
+  /outofband/{piid}/action-stop:
+    post:
+      operationId: outofbandActionStop
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/outofbandActionStopResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Stops the protocol after an action event was triggered.
+      tags:
+        - outofband
+  /outofband/accept-invitation:
+    post:
+      operationId: outofbandAcceptInvitation
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              invitation:
+                properties:
+                  '@id':
+                    type: string
+                    x-go-name: ID
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  accept:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Accept
+                  goal:
+                    type: string
+                    x-go-name: Goal
+                  goal_code:
+                    type: string
+                    x-go-name: GoalCode
+                  handshake_protocols:
+                    items:
+                      type: string
+                    type: array
+                    x-go-name: Protocols
+                  label:
+                    type: string
+                    x-go-name: Label
+                  request~attach:
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: Requests
+                  services:
+                    items:
+                      type: object
+                    type: array
+                    x-go-name: Services
+                type: object
+                x-go-name: Invitation
+              my_label:
+                type: string
+                x-go-name: MyLabel
+              reuse_any_connection:
+                type: boolean
+                x-go-name: ReuseAnyConnection
+              reuse_connection:
+                type: string
+                x-go-name: ReuseConnection
+              router_connections:
+                type: string
+                x-go-name: RouterConnections
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/outofbandAcceptInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts an invitation.
+      tags:
+        - outofband
+  /outofband/actions:
+    get:
+      operationId: outofbandActions
+      responses:
+        "200":
+          $ref: '#/responses/outofbandActionsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Returns pending actions that have not yet to be executed or cancelled.
+      tags:
+        - outofband
+  /outofband/create-invitation:
+    post:
+      operationId: outofbandCreateInvitation
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              attachments:
+                description: Attachments is intended to provide the possibility to include
+                  files, links or even JSON payload to the message.
+                items:
+                  $ref: '#/definitions/Attachment'
+                type: array
+                x-go-name: Attachments
+              goal:
+                type: string
+                x-go-name: Goal
+              goal_code:
+                type: string
+                x-go-name: GoalCode
+              label:
+                type: string
+                x-go-name: Label
+              protocols:
+                items:
+                  type: string
+                type: array
+                x-go-name: Protocols
+              router_connection_id:
+                type: string
+                x-go-name: RouterConnectionID
+              service:
+                items:
+                  type: object
+                type: array
+                x-go-name: Service
+            required:
+              - attachments
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/outofbandCreateInvitationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Creates an invitation.
+      tags:
+        - outofband
+  /presentproof/{piid}/accept-presentation:
+    post:
+      operationId: presentProofAcceptPresentation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              names:
+                items:
+                  type: string
+                type: array
+                x-go-name: Names
+            required:
+              - names
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/presentProofAcceptPresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a presentation.
+      tags:
+        - present-proof
+  /presentproof/{piid}/accept-problem-report:
+    post:
+      operationId: presentProofAcceptProblemReport
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+      responses:
+        "200":
+          $ref: '#/responses/presentProofAcceptProblemReportResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a problem report.
+      tags:
+        - present-proof
+  /presentproof/{piid}/accept-propose-presentation:
+    post:
+      operationId: presentProofAcceptProposePresentation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              request_presentation:
+                description: RequestPresentation describes values that need to be revealed
+                  and predicates that need to be fulfilled.
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is a field that provides some human readable information about the proposed presentation.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300]
+                    type: string
+                    x-go-name: Comment
+                  formats:
+                    description: |-
+                      Formats contains an entry for each request_presentations~attach array entry, providing the the value of the
+                      attachment @id and the verifiable presentation request format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  request_presentations~attach:
+                    description: RequestPresentationsAttach is an array of attachments
+                      containing the acceptable verifiable presentation requests.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: RequestPresentationsAttach
+                  will_confirm:
+                    description: |-
+                      WillConfirm is a field that defaults to "false" to indicate that the verifier will or will not
+                      send a post-presentation confirmation ack message.
+                    type: boolean
+                    x-go-name: WillConfirm
+                type: object
+                x-go-name: RequestPresentation
+            required:
+              - request_presentation
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/presentProofAcceptProposePresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a propose presentation.
+      tags:
+        - present-proof
+  /presentproof/{piid}/accept-request-presentation:
+    post:
+      operationId: presentProofAcceptRequestPresentation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              presentation:
+                description: Presentation is a message that contains signed presentations.
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is a field that provides some human readable information about the proposed presentation.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300].
+                    type: string
+                    x-go-name: Comment
+                  formats:
+                    description: |-
+                      Formats contains an entry for each presentations~attach array entry, providing the the value of the attachment
+                      @id and the verifiable presentation format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  presentations~attach:
+                    description: PresentationsAttach an array of attachments containing
+                      the presentation in the requested format(s).
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: PresentationsAttach
+                type: object
+                x-go-name: Presentation
+            required:
+              - presentation
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/presentProofAcceptRequestPresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Accepts a request presentation.
+      tags:
+        - present-proof
+  /presentproof/{piid}/decline-presentation:
+    post:
+      operationId: presentProofDeclinePresentation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/presentProofDeclinePresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a presentation.
+      tags:
+        - present-proof
+  /presentproof/{piid}/decline-propose-presentation:
+    post:
+      operationId: presentProofDeclineProposePresentation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/presentProofDeclineProposePresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a propose presentation.
+      tags:
+        - present-proof
+  /presentproof/{piid}/decline-request-presentation:
+    post:
+      operationId: presentProofDeclineRequestPresentation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - description: Reason is an explanation of why it was declined
+          in: query
+          name: reason
+          type: string
+          x-go-name: Reason
+      responses:
+        "200":
+          $ref: '#/responses/presentProofDeclineRequestPresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Declines a request presentation.
+      tags:
+        - present-proof
+  /presentproof/{piid}/negotiate-request-presentation:
+    post:
+      operationId: presentProofNegotiateRequestPresentation
+      parameters:
+        - description: Protocol instance ID
+          in: path
+          name: piid
+          required: true
+          type: string
+          x-go-name: PIID
+        - in: body
+          name: Body
+          schema:
+            properties:
+              propose_presentation:
+                description: |-
+                  ProposePresentation is a response message to a request-presentation message when the Prover wants to
+                  propose using a different presentation format.
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is a field that provides some human readable information about the proposed presentation.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300]
+                    type: string
+                    x-go-name: Comment
+                  formats:
+                    description: |-
+                      Formats contains an entry for each proposal~attach array entry, including an optional value of the
+                      attachment @id (if attachments are present) and the verifiable presentation format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  proposals~attach:
+                    description: |-
+                      ProposalsAttach is an array of attachments that further define the presentation request being proposed.
+                      This might be used to clarify which formats or format versions are wanted.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: ProposalsAttach
+                type: object
+                x-go-name: ProposePresentation
+            required:
+              - propose_presentation
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/presentProofNegotiateRequestPresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Is used by the Prover to counter a presentation request they received
+        with a proposal.
+      tags:
+        - present-proof
+  /presentproof/actions:
+    get:
+      operationId: presentProofActions
+      responses:
+        "200":
+          $ref: '#/responses/presentProofActionsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Returns pending actions that have not yet to be executed or cancelled.
+      tags:
+        - present-proof
+  /presentproof/send-propose-presentation:
+    post:
+      operationId: presentProofSendProposePresentation
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              my_did:
+                description: MyDID sender's did
+                type: string
+                x-go-name: MyDID
+              propose_presentation:
+                description: ProposePresentation is a message sent by the Prover to
+                  the verifier to initiate a proof presentation process.
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is a field that provides some human readable information about the proposed presentation.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300]
+                    type: string
+                    x-go-name: Comment
+                  formats:
+                    description: |-
+                      Formats contains an entry for each proposal~attach array entry, including an optional value of the
+                      attachment @id (if attachments are present) and the verifiable presentation format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  proposals~attach:
+                    description: |-
+                      ProposalsAttach is an array of attachments that further define the presentation request being proposed.
+                      This might be used to clarify which formats or format versions are wanted.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: ProposalsAttach
+                type: object
+                x-go-name: ProposePresentation
+              their_did:
+                description: TheirDID receiver's did
+                type: string
+                x-go-name: TheirDID
+            required:
+              - my_did
+              - their_did
+              - propose_presentation
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/presentProofSendProposePresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends a propose presentation.
+      tags:
+        - present-proof
+  /presentproof/send-request-presentation:
+    post:
+      operationId: presentProofSendRequestPresentation
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              my_did:
+                description: MyDID sender's did
+                type: string
+                x-go-name: MyDID
+              request_presentation:
+                description: RequestPresentation describes values that need to be revealed
+                  and predicates that need to be fulfilled.
+                properties:
+                  '@type':
+                    type: string
+                    x-go-name: Type
+                  comment:
+                    description: |-
+                      Comment is a field that provides some human readable information about the proposed presentation.
+                      TODO: Should follow DIDComm conventions for l10n. [Issue #1300]
+                    type: string
+                    x-go-name: Comment
+                  formats:
+                    description: |-
+                      Formats contains an entry for each request_presentations~attach array entry, providing the the value of the
+                      attachment @id and the verifiable presentation request format and version of the attachment.
+                    items:
+                      $ref: '#/definitions/Format'
+                    type: array
+                    x-go-name: Formats
+                  request_presentations~attach:
+                    description: RequestPresentationsAttach is an array of attachments
+                      containing the acceptable verifiable presentation requests.
+                    items:
+                      $ref: '#/definitions/Attachment'
+                    type: array
+                    x-go-name: RequestPresentationsAttach
+                  will_confirm:
+                    description: |-
+                      WillConfirm is a field that defaults to "false" to indicate that the verifier will or will not
+                      send a post-presentation confirmation ack message.
+                    type: boolean
+                    x-go-name: WillConfirm
+                type: object
+                x-go-name: RequestPresentation
+              their_did:
+                description: TheirDID receiver's did
+                type: string
+                x-go-name: TheirDID
+            required:
+              - my_did
+              - their_did
+              - request_presentation
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/presentProofSendRequestPresentationResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Sends a request presentation.
+      tags:
+        - present-proof
+  /rfc0593/get-spec:
+    post:
+      operationId: getCredentialSpecRequest
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              message:
+                type: object
+                x-go-name: Message
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/getCredentialSpecResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Extracts an RFC0593 credential spec from an applicable issue-credential
+        message.
+      tags:
+        - get-spec
+  /rfc0593/issue-credential:
+    post:
+      operationId: issueCredentialRequest
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              spec:
+                $ref: '#/definitions/CredentialSpec'
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/issueCredentialResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Issues a credential based on a RFC0593 credential spec.
+      tags:
+        - issue-credential
+  /rfc0593/verify-credential:
+    post:
+      operationId: verifyCredentialRequest
+      parameters:
+        - in: body
+          name: Body
+          schema:
+            properties:
+              credential:
+                type: object
+                x-go-name: Credential
+              spec:
+                $ref: '#/definitions/CredentialSpec'
+            type: object
+      responses:
+        "200":
+          $ref: '#/responses/verifyCredentialResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Verifies a credential against a credential spec.
+      tags:
+        - verify-credential
+  /vcwallet/add:
+    post:
+      description: |-
+        Supported data models:
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Collection
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Credential
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#DIDResolutionResponse
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#meta-data
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#connection
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Key
+      operationId: addContentReq
+      parameters:
+        - description: Params for adding content to wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/AddContentRequest'
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: adds given data model to wallet content store.
+      tags:
+        - vcwallet
+  /vcwallet/close:
+    post:
+      description: returns response containing bool flag false if token is not found
+        or already expired for this wallet user.
+      operationId: lockWalletReq
+      parameters:
+        - description: Params for locking wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/LockWalletRequest'
+      responses:
+        "200":
+          $ref: '#/responses/lockWalletRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Expires token issued to this VC wallet, removes wallet's key manager
+        instance and closes wallet content store.
+      tags:
+        - vcwallet
+  /vcwallet/create-key-pair:
+    post:
+      operationId: createKeyPairReq
+      parameters:
+        - description: Params for creating key pair from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/CreateKeyPairRequest'
+      responses:
+        "200":
+          $ref: '#/responses/createKeyPairRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: creates a new key pair from wallet.
+      tags:
+        - vcwallet
+  /vcwallet/create-profile:
+    post:
+      operationId: createProfileReq
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Creates new wallet profile and returns error if wallet profile is already
+        created.
+      tags:
+        - vcwallet
+  /vcwallet/derive:
+    post:
+      description: https://w3c-ccg.github.io/universal-wallet-interop-spec/#derive
+      operationId: deriveReq
+      parameters:
+        - description: Params for deriving a credential from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/DeriveRequest'
+      responses:
+        "200":
+          $ref: '#/responses/deriveRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: derives a Verifiable Credential.
+      tags:
+        - vcwallet
+  /vcwallet/get:
+    post:
+      description: |-
+        Supported data models:
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Collection
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Credential
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#DIDResolutionResponse
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#meta-data
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#connection
+      operationId: getContentReq
+      parameters:
+        - description: Params for getting content from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/GetContentRequest'
+      responses:
+        "200":
+          $ref: '#/responses/getContentRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: gets content from wallet content store.
+      tags:
+        - vcwallet
+  /vcwallet/getall:
+    post:
+      description: |-
+        Supported data models:
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Collection
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Credential
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#DIDResolutionResponse
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#meta-data
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#connection
+      operationId: getAllContentReq
+      parameters:
+        - description: Params for getting all contents from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/GetAllContentRequest'
+      responses:
+        "200":
+          $ref: '#/responses/getAllContentRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: gets all contents from wallet content store for given content type.
+      tags:
+        - vcwallet
+  /vcwallet/issue:
+    post:
+      description: https://w3c-ccg.github.io/universal-wallet-interop-spec/#issue
+      operationId: issueReq
+      parameters:
+        - description: Params for issuing credential from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/IssueRequest'
+      responses:
+        "200":
+          $ref: '#/responses/issueRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: adds proof to a Verifiable Credential.
+      tags:
+        - vcwallet
+  /vcwallet/open:
+    post:
+      description: |-
+        Unlocks given wallet's key manager instance & content store and
+        returns a authorization token to be used for performing wallet operations.
+      operationId: unlockWalletReq
+      parameters:
+        - description: Params for unlocking wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/UnlockWalletRequest'
+      responses:
+        "200":
+          $ref: '#/responses/unlockWalletRes'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - vcwallet
+  /vcwallet/profile/{id}:
+    get:
+      operationId: checkProfile
+      parameters:
+        - description: Wallet User's ID used to create profile.
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Checks if profile exists for given wallet user ID and returns error
+        if profile doesn't exists.
+      tags:
+        - vcwallet
+  /vcwallet/prove:
+    post:
+      description: https://w3c-ccg.github.io/universal-wallet-interop-spec/#prove
+      operationId: proveReq
+      parameters:
+        - description: Params for producing verifiable presentation from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/ProveRequest'
+      responses:
+        "200":
+          $ref: '#/responses/proveRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: produces a Verifiable Presentation.
+      tags:
+        - vcwallet
+  /vcwallet/query:
+    post:
+      description: |-
+        This function may return multiple presentations as a result based on combination of query types used.
+
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#query
+
+        Supported Query Types:
+        https://www.w3.org/TR/json-ld11-framing
+        https://identity.foundation/presentation-exchange
+        https://w3c-ccg.github.io/vp-request-spec/#query-by-example
+        https://w3c-ccg.github.io/vp-request-spec/#did-authentication-request
+      operationId: contentQueryReq
+      parameters:
+        - description: Params for querying credentials from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/ContentQueryRequest'
+      responses:
+        "200":
+          $ref: '#/responses/contentQueryRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: runs query against wallet credential contents and returns presentation
+        containing credential results.
+      tags:
+        - vcwallet
+  /vcwallet/remove:
+    post:
+      description: |-
+        Supported data models:
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Collection
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#Credential
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#DIDResolutionResponse
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#meta-data
+        https://w3c-ccg.github.io/universal-wallet-interop-spec/#connection
+      operationId: removeContentReq
+      parameters:
+        - description: Params for removing content from wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/RemoveContentRequest'
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: removes given content from wallet content store.
+      tags:
+        - vcwallet
+  /vcwallet/update-profile:
+    post:
+      description: |-
+        Caution:
+        you might lose your existing keys if you change kms options.
+        you might lose your existing wallet contents if you change storage/EDV options
+        (example: switching context storage provider or changing EDV settings).
+      operationId: UpdateProfileReq
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Updates an existing wallet profile and returns error if profile doesn't
+        exists.
+      tags:
+        - vcwallet
+  /vcwallet/verify:
+    post:
+      description: https://w3c-ccg.github.io/universal-wallet-interop-spec/#prove
+      operationId: verifyReq
+      parameters:
+        - description: Params for producing verifying a credential or presentation from
+            wallet.
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/VerifyRequest'
+      responses:
+        "200":
+          $ref: '#/responses/verifyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: verifies a Verifiable Credential or a Verifiable Presentation.
+      tags:
+        - vcwallet
+  /vdr/did:
+    post:
+      operationId: saveDIDReq
+      parameters:
+        - description: Params for creating the did document
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/CreateDIDRequest'
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      summary: Saves a did document with the friendly name.
+      tags:
+        - vdr
+  /vdr/did/{id}:
+    get:
+      operationId: getDIDReq
+      parameters:
+        - description: DID ID - pass the did
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/documentRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets did document with the friendly name.
+      tags:
+        - vdr
+  /vdr/did/create:
+    post:
+      operationId: createDIDReq
+      responses:
+        "200":
+          $ref: '#/responses/documentRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Create a did document.
+      tags:
+        - vdr
+  /vdr/did/records:
+    get:
+      description: Retrieves the did records
+      operationId: getDIDRecords
+      responses:
+        "200":
+          $ref: '#/responses/didRecordResult'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - vdr
+  /vdr/did/resolve/{id}:
+    get:
+      description: Resolve did
+      operationId: resolveDIDReq
+      parameters:
+        - description: DID ID - pass the did
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/docResResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+        - vdr
+  /verifiable/credential:
+    post:
+      operationId: saveCredentialReq
+      parameters:
+        - description: Params for saving the verifiable credential (pass the vc document
+            as a string)
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/CredentialExt'
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Saves the verifiable credential.
+      tags:
+        - verifiable
+  /verifiable/credential/{id}:
+    get:
+      operationId: getCredentialReq
+      parameters:
+        - description: VC ID - pass base64 version of the ID
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/credentialRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Retrieves the verifiable credential.
+      tags:
+        - verifiable
+  /verifiable/credential/name/{name}:
+    get:
+      operationId: getCredentialByNameReq
+      parameters:
+        - description: VC Name
+          in: path
+          name: name
+          required: true
+          type: string
+          x-go-name: Name
+      responses:
+        "200":
+          $ref: '#/responses/credentialRecord'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Retrieves the verifiable credential by name.
+      tags:
+        - verifiable
+  /verifiable/credential/remove/name/{name}:
+    post:
+      operationId: removeCredentialByNameReq
+      parameters:
+        - description: VC Name
+          in: path
+          name: name
+          required: true
+          type: string
+          x-go-name: Name
+      responses:
+        "200":
+          $ref: '#/responses/emptyResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Removes a verifiable credential by name.
+      tags:
+        - verifiable
+  /verifiable/credential/validate:
+    post:
+      operationId: validateCredentialReq
+      parameters:
+        - description: Params for validating the verifiable credential (pass the vc
+            document as a string)
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/Credential'
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Validates the verifiable credential.
+      tags:
+        - verifiable
+  /verifiable/credentials:
+    get:
+      operationId: getCredentials
+      responses:
+        "200":
+          $ref: '#/responses/credentialRecordResult'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Retrieves the verifiable credentials.
+      tags:
+        - verifiable
+  /verifiable/derivecredential:
+    post:
+      operationId: deriveCredentialReq
+      parameters:
+        - description: Params for deriving a credential
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/DeriveCredentialRequest'
+      responses:
+        "200":
+          $ref: '#/responses/deriveCredentialRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Derives a given verifiable credential for selective disclosure.
+      tags:
+        - verifiable
+  /verifiable/presentation:
+    post:
+      operationId: savePresentationReq
+      parameters:
+        - description: Params for saving the verifiable presentation
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/PresentationExt'
+      responses:
+        "200":
+          $ref: '#/responses/emptyRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Saves the verifiable presentation.
+      tags:
+        - verifiable
+  /verifiable/presentation/{id}:
+    get:
+      operationId: getPresentationReq
+      parameters:
+        - description: VP ID - pass base64 version of the ID
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/presentationRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Retrieves the verifiable presentation.
+      tags:
+        - verifiable
+  /verifiable/presentation/generate:
+    post:
+      operationId: generatePresentationReq
+      parameters:
+        - description: Params for generating the verifiable presentation (pass the vc
+            document as a raw JSON)
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/PresentationRequest'
+      responses:
+        "200":
+          $ref: '#/responses/presentationRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Generates the verifiable presentation from a verifiable credential.
+      tags:
+        - verifiable
+  /verifiable/presentation/generatebyid:
+    post:
+      operationId: generatePresentationByIDReq
+      parameters:
+        - description: Params for generating the verifiable presentation by id (pass
+            the vc document as a raw JSON)
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/PresentationRequestByID'
+      responses:
+        "200":
+          $ref: '#/responses/presentationRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Generates the verifiable presentation from a stored verifiable credential.
+      tags:
+        - verifiable
+  /verifiable/presentation/remove/name/{name}:
+    post:
+      operationId: removePresentationByNameReq
+      parameters:
+        - description: VC Name
+          in: path
+          name: name
+          required: true
+          type: string
+          x-go-name: Name
+      responses:
+        "200":
+          $ref: '#/responses/emptyResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Removes a verifiable presentation by name.
+      tags:
+        - verifiable
+  /verifiable/presentations:
+    get:
+      operationId: verifiable
+      responses:
+        "200":
+          $ref: '#/responses/presentationRecordResult'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Retrieves the verifiable credentials.
+  /verifiable/signcredential:
+    post:
+      operationId: signCredentialReq
+      parameters:
+        - description: Params for signing a credential
+          in: body
+          name: Params
+          schema:
+            $ref: '#/definitions/SignCredentialRequest'
+      responses:
+        "200":
+          $ref: '#/responses/signCredentialRes'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Signs given credential.
+      tags:
+        - verifiable
+produces:
+  - application/json
+responses:
+  acceptExchangeResponse:
+    description: |-
+      acceptExchangeResult model
+
+      This is used for returning response for accept exchange request
+    schema:
+      $ref: '#/definitions/ExchangeResponse'
+  acceptInvitationResponse:
+    description: |-
+      acceptInvitationResponse model
+
+      This is used for returning a accept invitation response for single invitation
+    schema:
+      properties:
+        accept:
+          description: Connection invitation accept mode
+          type: string
+          x-go-name: Accept
+        alias:
+          description: Alias
+          type: string
+          x-go-name: Alias
+        connection_id:
+          description: the connection ID of the connection invitation
+          type: string
+          x-go-name: ConnectionID
+        created_at:
+          description: Created time
+          format: date-time
+          type: string
+          x-go-name: CreateTime
+        error_msg:
+          description: Error message
+          type: string
+          x-go-name: Error
+        inbound_connection_id:
+          description: Inbound Connection ID  of the connection invitation
+          type: string
+          x-go-name: InboundConnectionID
+        initiator:
+          description: Connection invitation initiator
+          type: string
+          x-go-name: Initiator
+        invitation_key:
+          description: Invitation key
+          type: string
+          x-go-name: InvitationKey
+        invitation_mode:
+          description: Invitation mode
+          type: string
+          x-go-name: Mode
+        my_did:
+          description: My DID
+          type: string
+          x-go-name: DID
+        request_id:
+          description: Invitation ID of invitation response
+          type: string
+          x-go-name: RequestID
+        routing_state:
+          description: Routing state of connection invitation
+          type: string
+          x-go-name: RoutingState
+        state:
+          description: State of the connection invitation
+          type: string
+          x-go-name: State
+        their_did:
+          description: Other party's DID
+          type: string
+          x-go-name: InviterDID
+        their_label:
+          description: Other party's label
+          type: string
+          x-go-name: InviterLabel
+        their_role:
+          description: Other party's role
+          type: string
+          x-go-name: InviterRole
+        updated_at:
+          description: Updated time
+          format: date-time
+          type: string
+          x-go-name: UpdateTime
+      type: object
+  batchPickupResponse:
+    description: |-
+      batchPickupResponse model
+
+      Response from router after pending messages dispatched for given connection.
+    schema:
+      $ref: '#/definitions/BatchPickupResponse'
+  contentQueryRes:
+    description: contentQueryResponse response for wallet content query.
+    schema:
+      items:
+        type: object
+      type: array
+  createConnectionResp:
+    description: |-
+      createConnectionResp model
+
+      This is used as the response model for save connection api.
+    schema:
+      properties:
+        id:
+          description: The ID of the connection to get
+          type: string
+          x-go-name: ID
+      type: object
+  createInvitationResponse:
+    description: |-
+      createInvitationResponse model
+
+      This is used for returning a create invitation response with a single connection invitation as body
+    schema:
+      properties:
+        alias:
+          type: string
+          x-go-name: Alias
+        invitation:
+          properties:
+            '@id':
+              description: the ID of the connection invitation
+              type: string
+              x-go-name: ID
+            '@type':
+              description: the Type of the connection invitation
+              type: string
+              x-go-name: Type
+            ~thread:
+              $ref: '#/definitions/Thread'
+            did:
+              description: the DID of the connection invitation
+              type: string
+              x-go-name: DID
+            imageUrl:
+              description: the Image URL of the connection invitation
+              type: string
+              x-go-name: ImageURL
+            label:
+              description: the Label of the connection invitation
+              type: string
+              x-go-name: Label
+            recipientKeys:
+              description: the RecipientKeys for the connection invitation
+              items:
+                type: string
+              type: array
+              x-go-name: RecipientKeys
+            routingKeys:
+              description: the RoutingKeys of the connection invitation
+              items:
+                type: string
+              type: array
+              x-go-name: RoutingKeys
+            serviceEndpoint:
+              description: the Service endpoint of the connection invitation
+              type: string
+              x-go-name: ServiceEndpoint
+          type: object
+          x-go-name: Invitation
+        invitation_url:
+          type: string
+          x-go-name: InvitationURL
+      type: object
+  createKeyPairRes:
+    description: createKeyPairResponse is response model for creating a key pair from
+      wallet.
+    schema:
+      $ref: '#/definitions/CreateKeyPairResponse'
+  createKeySetRes:
+    description: |-
+      createKeySetRes model
+
+      This is used for returning the create set response
+    headers:
+      keyID:
+        description: key id base64 encoded
+        type: string
+      publicKey:
+        description: public key base64 encoded
+        type: string
+  credentialRecord:
+    description: |-
+      credentialRecord model
+
+      This is used to return credential record.
+    headers:
+      context:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      my_did:
+        description: |-
+          MyDID and TheirDID contains information about participants who were involved in the process
+          of issuing a credential or presentation.
+        type: string
+      name:
+        type: string
+      subjectId:
+        type: string
+      their_did:
+        type: string
+      type:
+        items:
+          type: string
+        type: array
+  credentialRecordResult:
+    description: |-
+      credentialRecordResult model
+
+      This is used to return credential records.
+    schema:
+      items:
+        $ref: '#/definitions/Record'
+      type: array
+  credentialRes:
+    description: |-
+      credentialRes model
+
+      This is used for returning query connection result for single record search
+    headers:
+      verifiableCredential:
+        type: string
+  deriveCredentialRes:
+    description: |-
+      deriveCredentialRes model
+
+      This is used for returning the derive credential response.
+    headers:
+      verifiableCredential:
+        type: string
+  deriveRes:
+    description: deriveResponse is response for derived credential operation.
+  didRecordResult:
+    description: |-
+      didRecordResult model
+
+      This is used to return did records.
+    schema:
+      items:
+        $ref: '#/definitions/Record'
+      type: array
+  docResResponse:
+    description: |-
+      docResolutionResponse model
+
+      This is used for returning DID document resolution response.
+    schema:
+      $ref: '#/definitions/DocResolution'
+  documentRes:
+    description: |-
+      documentRes model
+
+      This is used for returning query connection result for single record search
+  emptyRes:
+    description: emptyRes model
+  emptyResponse:
+    description: emptyResponse model
+    schema:
+      $ref: '#/definitions/emptyRes'
+  genericError:
+    description: genericError is aries rest api error response
+    schema:
+      $ref: '#/definitions/genericErrorBody'
+  getAllContentRes:
+    description: getAllContentResponse response for get all content by content type
+      wallet operation.
+  getConnectionsResponse:
+    description: |-
+      ConnectionsResponse model
+
+      Represents a Connections response message
+    schema:
+      $ref: '#/definitions/ConnectionsResponse'
+  getContentRes:
+    description: getContentResponse response for get content from wallet operation.
+  getCredentialSpecResponse:
+    description: getCredentialSpecResponse model
+    schema:
+      properties:
+        spec:
+          $ref: '#/definitions/CredentialSpec'
+      type: object
+  implicitInvitationResponse:
+    description: |-
+      implicitInvitationResponse model
+
+      This is used for returning create implicit invitation response
+    schema:
+      properties:
+        connection_id:
+          description: the connection ID of the connection for implicit invitation
+          type: string
+          x-go-name: ConnectionID
+      type: object
+  introduceAcceptProblemReportResponse:
+    description: |-
+      introduceAcceptProblemReportResponse model
+
+      Represents a AcceptProblemReport response message
+    schema:
+      type: object
+  introduceAcceptProposalResponse:
+    description: |-
+      introduceAcceptProposalResponse model
+
+      Represents a AcceptProposal response message.
+    schema:
+      type: object
+  introduceAcceptProposalWithOOBRequestResponse:
+    description: |-
+      introduceAcceptProposalWithOOBRequestResponse model
+
+      Represents a AcceptProposalWithOOBInvitation response message.
+    schema:
+      type: object
+  introduceAcceptRequestWithPublicOOBInvitationResponse:
+    description: |-
+      introduceAcceptRequestWithPublicOOBInvitationResponse model
+
+      Represents a AcceptRequestWithPublicOOBInvitation response message.
+    schema:
+      type: object
+  introduceAcceptRequestWithRecipientsResponse:
+    description: |-
+      introduceAcceptRequestWithRecipientsResponse model
+
+      Represents a AcceptRequestWithRecipients response message.
+    schema:
+      type: object
+  introduceActionsResponse:
+    description: |-
+      introduceActionsResponse model
+
+      Represents Actions response message.
+    schema:
+      properties:
+        actions:
+          items:
+            properties:
+              Msg:
+                $ref: '#/definitions/DIDCommMsgMap'
+              MyDID:
+                type: string
+              PIID:
+                description: Protocol instance ID
+                type: string
+              TheirDID:
+                type: string
+            type: object
+          type: array
+          x-go-name: Actions
+      type: object
+  introduceDeclineProposalResponse:
+    description: |-
+      introduceDeclineProposalResponse model
+
+      Represents a DeclineProposal response message.
+    schema:
+      type: object
+  introduceDeclineRequestResponse:
+    description: |-
+      introduceDeclineRequestResponse model
+
+      Represents a DeclineRequest response message.
+    schema:
+      type: object
+  introduceSendProposalResponse:
+    description: |-
+      introduceSendProposalResponse model
+
+      Represents a SendProposal response message.
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  introduceSendProposalWithOOBInvitationResponse:
+    description: |-
+      introduceSendProposalWithOOBInvitationResponse model
+
+      Represents a SendProposalWithOOBInvitation response message.
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  introduceSendRequestResponse:
+    description: |-
+      introduceSendRequestResponse model
+
+      Represents a SendRequest response message.
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  issueCredentialAcceptCredentialResponse:
+    description: |-
+      issueCredentialAcceptCredentialResponse model
+
+      Represents a AcceptCredential response message
+    schema:
+      type: object
+  issueCredentialAcceptOfferResponse:
+    description: |-
+      issueCredentialAcceptOfferResponse model
+
+      Represents a AcceptOffer response message
+    schema:
+      type: object
+  issueCredentialAcceptProblemReportResponse:
+    description: |-
+      issueCredentialAcceptProblemReportResponse model
+
+      Represents a AcceptProblemReport response message
+    schema:
+      type: object
+  issueCredentialAcceptProposalResponse:
+    description: |-
+      issueCredentialAcceptProposalResponse model
+
+      Represents a AcceptProposal response message
+    schema:
+      type: object
+  issueCredentialAcceptRequestResponse:
+    description: |-
+      issueCredentialAcceptRequestResponse model
+
+      Represents a AcceptRequest response message
+    schema:
+      type: object
+  issueCredentialActionsResponse:
+    description: |-
+      issueCredentialActionsResponse model
+
+      Represents a Actions response message
+    schema:
+      properties:
+        actions:
+          items:
+            properties:
+              Msg:
+                $ref: '#/definitions/DIDCommMsgMap'
+              MyDID:
+                type: string
+              PIID:
+                description: Protocol instance ID
+                type: string
+              TheirDID:
+                type: string
+            type: object
+          type: array
+          x-go-name: Actions
+      type: object
+  issueCredentialDeclineCredentialResponse:
+    description: |-
+      issueCredentialDeclineCredentialResponse model
+
+      Represents a DeclineCredential response message
+    schema:
+      type: object
+  issueCredentialDeclineOfferResponse:
+    description: |-
+      issueCredentialDeclineOfferResponse model
+
+      Represents a DeclineOffer response message
+    schema:
+      type: object
+  issueCredentialDeclineProposalResponse:
+    description: |-
+      issueCredentialDeclineProposalResponse model
+
+      Represents a DeclineProposal response message
+    schema:
+      type: object
+  issueCredentialDeclineRequestResponse:
+    description: |-
+      issueCredentialDeclineRequestResponse model
+
+      Represents a DeclineRequest response message
+    schema:
+      type: object
+  issueCredentialNegotiateProposalResponse:
+    description: |-
+      issueCredentialNegotiateProposalResponse model
+
+      Represents a NegotiateProposal response message
+    schema:
+      type: object
+  issueCredentialResponse:
+    description: issueCredentialResponse model
+    schema:
+      properties:
+        issue_credential:
+          $ref: '#/definitions/IssueCredential'
+      type: object
+  issueCredentialSendOfferResponse:
+    description: |-
+      issueCredentialSendOfferResponse model
+
+      Represents a SendOffer response message
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  issueCredentialSendProposalResponse:
+    description: |-
+      issueCredentialSendProposalResponse model
+
+      Represents a SendProposal response message
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  issueCredentialSendRequestResponse:
+    description: |-
+      issueCredentialSendRequestResponse model
+
+      Represents a SendRequest response message
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  issueRes:
+    description: issueResponse is response for issue credential interface from wallet.
+  lockWalletRes:
+    description: lockWalletResponse contains response for wallet lock operation.
+    headers:
+      closed:
+        description: |-
+          Closed status of the wallet lock operation.
+          if true, wallet is closed successfully
+          if false, wallet is already closed or never unlocked.
+        type: boolean
+  outofbandAcceptInvitationResponse:
+    description: |-
+      outofbandAcceptInvitationResponse model
+
+      Represents a AcceptInvitation response message.
+    schema:
+      properties:
+        connection_id:
+          type: string
+          x-go-name: ConnectionID
+      type: object
+  outofbandActionContinueResponse:
+    description: |-
+      outofbandActionContinueResponse model
+
+      Represents a ActionContinue response message
+    schema:
+      type: object
+  outofbandActionStopResponse:
+    description: |-
+      outofbandActionStopResponse model
+
+      Represents a ActionStop response message
+    schema:
+      type: object
+  outofbandActionsResponse:
+    description: |-
+      outofbandActionsResponse model
+
+      Represents a Actions response message
+    schema:
+      properties:
+        actions:
+          items:
+            properties:
+              Msg:
+                $ref: '#/definitions/DIDCommMsgMap'
+              MyDID:
+                type: string
+              PIID:
+                description: Protocol instance ID
+                type: string
+              ProtocolName:
+                type: string
+              TheirDID:
+                type: string
+            type: object
+          type: array
+          x-go-name: Actions
+      type: object
+  outofbandCreateInvitationResponse:
+    description: |-
+      outofbandCreateInvitationResponse model
+
+      Represents a CreateInvitation response message.
+    schema:
+      properties:
+        invitation:
+          properties:
+            '@id':
+              type: string
+              x-go-name: ID
+            '@type':
+              type: string
+              x-go-name: Type
+            accept:
+              items:
+                type: string
+              type: array
+              x-go-name: Accept
+            goal:
+              type: string
+              x-go-name: Goal
+            goal_code:
+              type: string
+              x-go-name: GoalCode
+            handshake_protocols:
+              items:
+                type: string
+              type: array
+              x-go-name: Protocols
+            label:
+              type: string
+              x-go-name: Label
+            request~attach:
+              items:
+                $ref: '#/definitions/Attachment'
+              type: array
+              x-go-name: Requests
+            services:
+              items:
+                type: object
+              type: array
+              x-go-name: Services
+          type: object
+          x-go-name: Invitation
+      type: object
+  presentProofAcceptPresentationResponse:
+    description: |-
+      presentProofAcceptPresentationResponse model
+
+      Represents a AcceptPresentation response message.
+    schema:
+      type: object
+  presentProofAcceptProblemReportResponse:
+    description: |-
+      presentProofAcceptProblemReportResponse model
+
+      Represents a AcceptProblemReport response message
+    schema:
+      type: object
+  presentProofAcceptProposePresentationResponse:
+    description: |-
+      presentProofAcceptProposePresentationResponse model
+
+      Represents a AcceptProposePresentation response message.
+    schema:
+      type: object
+  presentProofAcceptRequestPresentationResponse:
+    description: |-
+      presentProofAcceptRequestPresentationResponse model
+
+      Represents a AcceptRequestPresentation response message.
+    schema:
+      type: object
+  presentProofActionsResponse:
+    description: |-
+      presentProofActionsResponse model
+
+      Represents a Actions response message.
+    schema:
+      properties:
+        actions:
+          items:
+            properties:
+              Msg:
+                $ref: '#/definitions/DIDCommMsgMap'
+              MyDID:
+                type: string
+              PIID:
+                description: Protocol instance ID
+                type: string
+              TheirDID:
+                type: string
+            type: object
+          type: array
+          x-go-name: Actions
+      type: object
+  presentProofDeclinePresentationResponse:
+    description: |-
+      presentProofDeclinePresentationResponse model
+
+      Represents a DeclinePresentation response message.
+    schema:
+      type: object
+  presentProofDeclineProposePresentationResponse:
+    description: |-
+      presentProofDeclineProposePresentationResponse model
+
+      Represents a DeclineProposePresentation response message.
+    schema:
+      type: object
+  presentProofDeclineRequestPresentationResponse:
+    description: |-
+      presentProofDeclineRequestPresentationResponse model
+
+      Represents a DeclineRequestPresentation response message.
+    schema:
+      type: object
+  presentProofNegotiateRequestPresentationResponse:
+    description: |-
+      presentProofNegotiateRequestPresentationResponse model
+
+      Represents a NegotiateRequestPresentation response message
+    schema:
+      type: object
+  presentProofSendProposePresentationResponse:
+    description: |-
+      presentProofSendProposePresentationResponse model
+
+      Represents a SendProposePresentation response message.
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  presentProofSendRequestPresentationResponse:
+    description: |-
+      presentProofSendRequestPresentationResponse model
+
+      Represents a SendRequestPresentation response message.
+    schema:
+      properties:
+        piid:
+          description: PIID Protocol instance ID. It can be used as a correlation
+            ID
+          type: string
+          x-go-name: PIID
+      type: object
+  presentationRecordResult:
+    description: |-
+      presentationRecordResult model
+
+      This is used to return presentation records.
+    schema:
+      items:
+        $ref: '#/definitions/Record'
+      type: array
+  presentationRes:
+    description: |-
+      presentationRes model
+
+      This is used for returning the verifiable presentation
+  proveRes:
+    description: proveResponse contains response presentation from prove operation.
+  queryConnectionResponse:
+    description: |-
+      queryConnectionResponse model
+
+      This is used for returning query connection result for single record search
+    schema:
+      properties:
+        result:
+          $ref: '#/definitions/Connection'
+      type: object
+  queryConnectionsResponse:
+    description: |-
+      queryConnectionsResponse model
+
+      This is used for returning query connections results
+    schema:
+      properties:
+        results:
+          items:
+            $ref: '#/definitions/Connection'
+          type: array
+          x-go-name: Results
+      type: object
+  receiveInvitationResponse:
+    description: |-
+      receiveInvitationResponse model
+
+      This is used for returning a receive invitation response with a single receive invitation response as body
+    schema:
+      properties:
+        accept:
+          description: Connection invitation accept mode
+          type: string
+          x-go-name: Accept
+        connection_id:
+          description: the connection ID of the connection invitation
+          type: string
+          x-go-name: ConnectionID
+        created_at:
+          description: Created time
+          format: date-time
+          type: string
+          x-go-name: CreateTime
+        initiator:
+          description: Connection invitation initiator
+          type: string
+          x-go-name: Initiator
+        invitation_key:
+          description: Invitation key
+          type: string
+          x-go-name: InvitationKey
+        invitation_mode:
+          description: Invitation mode
+          type: string
+          x-go-name: Mode
+        my_did:
+          description: My DID
+          type: string
+          x-go-name: DID
+        request_id:
+          description: Invitation ID of invitation response
+          type: string
+          x-go-name: RequestID
+        routing_state:
+          description: Routing state of connection invitation
+          type: string
+          x-go-name: RoutingState
+        state:
+          description: State of the connection invitation
+          type: string
+          x-go-name: State
+        their_label:
+          description: Other party's label
+          type: string
+          x-go-name: InviterLabel
+        updated_at:
+          description: Updated time
+          format: date-time
+          type: string
+          x-go-name: UpdateTime
+      type: object
+  registerRouteRes:
+    description: registerRouteRes model
+    schema:
+      type: object
+  registeredServicesResponse:
+    description: |-
+      RegisteredServicesResponse model
+
+      This is used for returning list of registered service names
+    headers:
+      names:
+        description: Registered service names
+        items:
+          type: string
+        type: array
+  removeConnectionResponse:
+    description: |-
+      RemoveConnectionResponse model
+
+      response of remove connection action
+    schema:
+      type: object
+  sendMessageResponse:
+    description: |-
+      sendMessageResponse model
+
+      Response of send/reply message features.
+      Usually contains reply for the message sent if await reply feature is used.
+  signCredentialRes:
+    description: |-
+      signCredentialRes model
+
+      This is used for returning the sign credential response
+  statusResponse:
+    description: |-
+      statusResponse model
+
+      Response containing details of pending messages for given connection.
+    schema:
+      $ref: '#/definitions/StatusResponse'
+  unlockWalletRes:
+    description: unlockWalletResponse contains response for wallet unlock operation.
+    headers:
+      token:
+        description: Token for granting access to wallet for subsequent wallet operations.
+        type: string
+  unregisterRouteRes:
+    description: unregisterRouteRes model
+    schema:
+      type: object
+  verifyCredentialResponse:
+    description: verifyCredentialResponse model
+    schema:
+      type: object
+  verifyRes:
+    description: verifyResponse is response model for wallet verify operation.
+    headers:
+      error:
+        description: error details if verified is false.
+        type: string
+      verified:
+        description: if true then verification is successful.
+        type: boolean
+schemes:
+  - https
+swagger: "2.0"
