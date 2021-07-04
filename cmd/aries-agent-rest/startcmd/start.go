@@ -679,6 +679,7 @@ func startAgent(parameters *agentParameters) error {
 		router.HandleFunc(handler.Path(), handler.Handle()).Methods(handler.Method())
 	}
 
+
 	logger.Infof("Starting aries agent rest on host [%s]", parameters.host)
 	// start server on given port and serve using given handlers
 	handler := cors.New(
